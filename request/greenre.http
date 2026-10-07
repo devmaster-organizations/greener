@@ -1,0 +1,13 @@
+GET https://metrics.unilaunch.org/health
+
+###
+GET https://metrics.unilaunch.org/services
+
+###
+GET https://metrics.unilaunch.org/services/billing-api
+
+###
+GET https://metrics.unilaunch.org/metrics/billing-api
+
+###
+GET https://metrics.unilaunch.org/health
