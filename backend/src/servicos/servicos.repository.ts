@@ -1,7 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 
-// Mantenha aqui a interface SalvarServicoInput existente.
+export interface SalvarServicoInput {
+  id: string;
+  nome: string;
+  regionCode: string;
+  metricsPath: string;
+  pais?: string | null;
+  regiao?: string | null;
+  cidade?: string | null;
+}
 
 @Injectable()
 export class ServicosRepository {
@@ -11,8 +19,15 @@ export class ServicosRepository {
   ) {}
 
   async salvar(servico: SalvarServicoInput): Promise<void> {
-    await this.prisma.servico.create({
-      data: servico,
+    const { id, ...dados } = servico;
+
+    await this.prisma.servico.upsert({
+      where: { id },
+      create: {
+        id,
+        ...dados,
+      },
+      update: dados,
     });
   }
 }
