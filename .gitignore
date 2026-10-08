@@ -31,8 +31,6 @@ coverage/
 /backend/src/generated/prisma/
 
 /backend/src/generated/prisma/
-/backend/.agent/*
-/backend/.agents
+/backend/.agent/
 /backend/.agents/
-/backend/.claude
 /backend/.claude/

@@ -1,0 +1,32 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model Servico {
+  id            String    @id @db.VarChar(100)
+  nome          String    @db.VarChar(150)
+  regionCode    String    @map("region_code") @db.VarChar(50)
+  pais          String?   @db.VarChar(100)
+  regiao        String?   @db.VarChar(100)
+  cidade        String?   @db.VarChar(100)
+  latitude      Decimal?  @db.Decimal(10, 7)
+  longitude     Decimal?  @db.Decimal(10, 7)
+  metricsPath   String    @map("metrics_path") @db.VarChar(255)
+  status        String    @default("ATIVO") @db.VarChar(30)
+  ultimaColetaAt DateTime? @map("ultima_coleta_at") @db.Timestamptz(3)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@map("servicos")
+}
