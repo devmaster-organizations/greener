@@ -23,3 +23,12 @@ coverage/
 .idea/
 .DS_Store
 Thumbs.db
+
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+/backend/src/generated/prisma/
+
+/backend/src/generated/prisma/
+/backend/.agent/*
