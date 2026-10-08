@@ -9,6 +9,7 @@ import { createObserveModule } from '@nestjs/observe';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { ConfigModule } from '@nestjs/config';
+import { PrismaModule } from './prisma/prisma.module.js';
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 let AppModule = class AppModule {
 };
@@ -18,6 +19,7 @@ AppModule = __decorate([
             ConfigModule.forRoot({
                 isGlobal: true,
             }),
+            PrismaModule,
             ObserveModule.forRoot({
                 appKey: 'YOUR_APP_KEY',
                 appSecret: 'YOUR_APP_SECRET',
