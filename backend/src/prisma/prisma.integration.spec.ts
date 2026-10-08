@@ -3,8 +3,8 @@ import { config } from 'dotenv';
 import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { describe, expect, it } from 'vitest';
-import { PrismaModule } from '../../prisma/prisma.module.js';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaModule } from './prisma.module.js';
+import { PrismaService } from './prisma.service.js';
 
 config({ path: '.env.test' });
 
