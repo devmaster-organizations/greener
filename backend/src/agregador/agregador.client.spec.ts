@@ -86,4 +86,49 @@ describe('AgregadorClient', () => {
       },
     ]);
   });
+
+  it('lança um erro quando o Agregador responde HTTP 503', async () => {
+  const fetchMock = vi.fn<typeof fetch>();
+
+  // Mesmo com uma lista no corpo, o status indica falha.
+  fetchMock.mockResolvedValue(
+    new Response(JSON.stringify([]), {
+      status: 503,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }),
+  );
+
+  const client = new AgregadorClient(
+    'https://metrics.unilaunch.org',
+    fetchMock,
+  );
+
+  await expect(client.listarServicos()).rejects.toThrow(
+    'Falha ao consultar serviços: HTTP 503',
+  );
+});
+
+it('rejeita uma resposta que não seja uma lista de serviços', async () => {
+  const fetchMock = vi.fn<typeof fetch>();
+
+  fetchMock.mockResolvedValue(
+    new Response(JSON.stringify({ services: [] }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }),
+  );
+
+  const client = new AgregadorClient(
+    'https://metrics.unilaunch.org',
+    fetchMock,
+  );
+
+  await expect(client.listarServicos()).rejects.toThrow(
+    'Resposta inválida do Agregador: esperada uma lista de serviços',
+  );
+});
 });
