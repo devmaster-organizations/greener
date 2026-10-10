@@ -43,7 +43,15 @@ export class AgregadorClient {
 	);
 	}
 
-    const servicos = (await resposta.json()) as ServicoAgregador[];
+    const dados: unknown = await resposta.json();
+
+	if (!Array.isArray(dados)) {
+	throw new Error(
+		'Resposta inválida do Agregador: esperada uma lista de serviços',
+	);
+	}
+
+	const servicos = dados as ServicoAgregador[];
 
     return servicos.map((servico) => ({
       id: servico.id,
