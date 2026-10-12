@@ -1,11 +1,36 @@
 import Image from "next/image";
+import Sidebar from "../components/layout/Sidebar";
+import Header from "../components/layout/Header";
+import IndicadorCard from "../components/dashboard/IndicadorCard";
+import { indicadoresDashboard } from "../data/mockDashboard";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        GREENER
+
+    <div className="flex min-h-screen bg-gray-50">
+      <Sidebar />
+
+      <main className="min-w-0 flex-1 p-8">
+        <Header
+          titulo="Dashboard"
+          descricao="Monitoramento do impacto ambiental das aplicações."
+        />
+
+        <section
+          className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4"
+          aria-label="Indicadores ambientais"
+        >
+          {indicadoresDashboard.map((indicador) => (
+            <IndicadorCard
+              key={indicador.id}
+              titulo={indicador.titulo}
+              valor={indicador.valor}
+              descricao={indicador.descricao}
+            />
+          ))}
+        </section>
       </main>
+
     </div>
   );
 }
