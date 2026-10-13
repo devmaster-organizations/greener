@@ -5,12 +5,14 @@ import IndicadorCard from "../components/dashboard/IndicadorCard";
 import ImpactoPorServico from "../components/dashboard/ImpactoPorServico";
 import HistoricoImpacto from "../components/dashboard/HistoricoImpacto";
 import UltimasColetas from "../components/dashboard/UltimasColetas";
+import ServicosMonitorados from "../components/dashboard/ServicosMonitorados";
 
 import {
   indicadoresDashboard,
   impactoPorServico,
   historicoImpacto,
   ultimasColetas,
+  servicosMonitorados,
 } from "../data/mockDashboard";
 
 
@@ -48,8 +50,15 @@ export default function Home() {
           <ImpactoPorServico dados={impactoPorServico} />
           <HistoricoImpacto dados={historicoImpacto} />
         </section>
-        
-        <UltimasColetas dados={ultimasColetas} />
+
+        <section
+          className="mt-8 grid grid-cols-1 gap-6 2xl:grid-cols-2"
+          aria-label="Detalhes do monitoramento"
+        >
+          <ServicosMonitorados dados={servicosMonitorados} />
+
+          <UltimasColetas dados={ultimasColetas} />
+        </section>
 
       </main>
 

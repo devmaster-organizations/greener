@@ -175,3 +175,93 @@ export const ultimasColetas = [
   co2e: number;
   status: "Concluída" | "Indisponível";
 }[];
+
+
+
+/**
+ * DADOS SIMULADOS — SERVIÇOS MONITORADOS
+ *
+ * INTEGRAÇÃO COM O BACKEND:
+ * Substituir estes dados pelos serviços retornados pela API NestJS.
+ *
+ * Tabela sugerida: servicos
+ *
+ * Campos sugeridos:
+ * - id: identificador do serviço;
+ * - nome: nome do serviço;
+ * - status: situação atual do monitoramento;
+ * - pais: país onde o serviço está localizado;
+ * - regiao: região ou estado;
+ * - cidade: cidade;
+ * - energia_kwh: energia estimada no período;
+ * - co2e_g: emissões estimadas em gramas de CO₂e.
+ *
+ * Os valores ambientais devem corresponder ao período consultado.
+ * A API poderá obter energia e emissões do histórico de coletas,
+ * relacionado ao serviço pelo seu identificador.
+ *
+ * Confirmar os nomes das tabelas, campos e endpoints com o responsável
+ * pelo backend antes da integração definitiva.
+ */
+export const servicosMonitorados = [
+  {
+    id: 1,
+    nome: "API",
+    status: "Online",
+    pais: "Brasil",
+    regiao: "São Paulo",
+    cidade: "São Paulo",
+    energiaKwh: 2.84,
+    co2e: 241.4,
+  },
+  {
+    id: 2,
+    nome: "Frontend",
+    status: "Online",
+    pais: "Brasil",
+    regiao: "São Paulo",
+    cidade: "São Paulo",
+    energiaKwh: 1.92,
+    co2e: 163.2,
+  },
+  {
+    id: 3,
+    nome: "Banco de dados",
+    status: "Online",
+    pais: "Brasil",
+    regiao: "São Paulo",
+    cidade: "São Paulo",
+    energiaKwh: 4.16,
+    co2e: 353.6,
+  },
+  {
+    id: 4,
+    nome: "Autenticação",
+    status: "Indisponível",
+    pais: "Brasil",
+    regiao: "São Paulo",
+    cidade: "São Paulo",
+    energiaKwh: 0,
+    co2e: 0,
+  },
+  {
+    id: 5,
+    nome: "Worker",
+    status: "Online",
+    pais: "Brasil",
+    regiao: "São Paulo",
+    cidade: "São Paulo",
+    energiaKwh: 1.48,
+    co2e: 125.8,
+  },
+] satisfies {
+  id: number;
+  nome: string;
+  status: "Online" | "Indisponível";
+  pais: string;
+  regiao: string;
+  cidade: string;
+  energiaKwh: number;
+  co2e: number;
+}[];
+
