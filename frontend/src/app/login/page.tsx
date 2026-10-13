@@ -1,6 +1,17 @@
 export default function LoginPage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-green-50 px-4">
+    <main className="relative isolate min-h-screen flex items-center justify-center overflow-hidden px-4">
+
+  {/* Imagem de fundo */}
+  <div
+    className="absolute inset-0 -z-20 bg-cover bg-center"
+    style={{
+      backgroundImage: "url('/images/greener-background.jpg')",
+    }}
+  />
+
+  {/* Camada para melhorar a leitura */}
+  <div className="absolute inset-0 -z-10 bg-white/45" />
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-green-700">
