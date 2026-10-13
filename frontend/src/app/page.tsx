@@ -1,8 +1,18 @@
-import Image from "next/image";
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
+
 import IndicadorCard from "../components/dashboard/IndicadorCard";
-import { indicadoresDashboard } from "../data/mockDashboard";
+import ImpactoPorServico from "../components/dashboard/ImpactoPorServico";
+import HistoricoImpacto from "../components/dashboard/HistoricoImpacto";
+import UltimasColetas from "../components/dashboard/UltimasColetas";
+
+import {
+  indicadoresDashboard,
+  impactoPorServico,
+  historicoImpacto,
+  ultimasColetas,
+} from "../data/mockDashboard";
+
 
 export default function Home() {
   return (
@@ -29,6 +39,18 @@ export default function Home() {
             />
           ))}
         </section>
+
+
+        <section
+          className="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-2"
+          aria-label="Gráficos de impacto ambiental"
+        >
+          <ImpactoPorServico dados={impactoPorServico} />
+          <HistoricoImpacto dados={historicoImpacto} />
+        </section>
+        
+        <UltimasColetas dados={ultimasColetas} />
+
       </main>
 
     </div>
