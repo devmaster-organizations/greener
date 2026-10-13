@@ -11,18 +11,18 @@ export default function IndicadorCard({
   descricao,
 }: IndicadorCardProps) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-      <h2 className="text-sm font-medium text-gray-600">
+    <article className="h-full rounded-xl border border-[#DCE8DF] bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+      <h2 className="text-sm font-medium leading-relaxed text-[#52666A]">
         {titulo}
       </h2>
 
-      <p className="mt-3 text-3xl font-bold text-gray-900">
+      <p className="mt-3 text-3xl font-bold tracking-tight text-[#18343C]">
         {valor}
       </p>
 
-      <p className="mt-2 text-sm text-gray-500">
+      <p className="mt-2 text-sm leading-relaxed text-[#52666A]">
         {descricao}
       </p>
-    </div>
+    </article>
   );
 }

@@ -9,12 +9,16 @@ export default function Header({
   descricao,
 }: HeaderProps) {
   return (
-    <header className="mb-8">
-      <h1 className="text-3xl font-bold text-gray-900">
+    <header className="mb-8 border-b border-[#DCE8DF] pb-6">
+      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#159447]">
+        GreenER | Sustentabilidade digital
+      </p>
+
+      <h1 className="text-3xl font-bold tracking-tight text-[#18343C]">
         {titulo}
       </h1>
 
-      <p className="mt-2 text-gray-600">
+      <p className="mt-2 text-sm leading-relaxed text-[#52666A]">
         {descricao}
       </p>
     </header>
