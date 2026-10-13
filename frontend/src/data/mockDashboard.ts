@@ -203,6 +203,7 @@ export const ultimasColetas = [
  * Confirmar os nomes das tabelas, campos e endpoints com o responsável
  * pelo backend antes da integração definitiva.
  */
+
 export const servicosMonitorados = [
   {
     id: 1,
@@ -211,6 +212,8 @@ export const servicosMonitorados = [
     pais: "Brasil",
     regiao: "São Paulo",
     cidade: "São Paulo",
+    latitude: -23.5505,
+    longitude: -46.6333,
     energiaKwh: 2.84,
     co2e: 241.4,
   },
@@ -220,7 +223,9 @@ export const servicosMonitorados = [
     status: "Online",
     pais: "Brasil",
     regiao: "São Paulo",
-    cidade: "São Paulo",
+    cidade: "Campinas",
+    latitude: -22.9056,
+    longitude: -47.0608,
     energiaKwh: 1.92,
     co2e: 163.2,
   },
@@ -229,8 +234,10 @@ export const servicosMonitorados = [
     nome: "Banco de dados",
     status: "Online",
     pais: "Brasil",
-    regiao: "São Paulo",
-    cidade: "São Paulo",
+    regiao: "Paraná",
+    cidade: "Curitiba",
+    latitude: -25.4284,
+    longitude: -49.2733,
     energiaKwh: 4.16,
     co2e: 353.6,
   },
@@ -239,8 +246,10 @@ export const servicosMonitorados = [
     nome: "Autenticação",
     status: "Indisponível",
     pais: "Brasil",
-    regiao: "São Paulo",
-    cidade: "São Paulo",
+    regiao: "Paraná",
+    cidade: "Londrina",
+    latitude: -23.3045,
+    longitude: -51.1696,
     energiaKwh: 0,
     co2e: 0,
   },
@@ -249,8 +258,10 @@ export const servicosMonitorados = [
     nome: "Worker",
     status: "Online",
     pais: "Brasil",
-    regiao: "São Paulo",
-    cidade: "São Paulo",
+    regiao: "Rio de Janeiro",
+    cidade: "Rio de Janeiro",
+    latitude: -22.9068,
+    longitude: -43.1729,
     energiaKwh: 1.48,
     co2e: 125.8,
   },
@@ -261,6 +272,8 @@ export const servicosMonitorados = [
   pais: string;
   regiao: string;
   cidade: string;
+  latitude: number;
+  longitude: number;
   energiaKwh: number;
   co2e: number;
 }[];

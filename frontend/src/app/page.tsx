@@ -6,6 +6,7 @@ import ImpactoPorServico from "../components/dashboard/ImpactoPorServico";
 import HistoricoImpacto from "../components/dashboard/HistoricoImpacto";
 import UltimasColetas from "../components/dashboard/UltimasColetas";
 import ServicosMonitorados from "../components/dashboard/ServicosMonitorados";
+import MapaServicos from "../components/dashboard/MapaServicos";
 
 import {
   indicadoresDashboard,
@@ -51,12 +52,15 @@ export default function Home() {
           <HistoricoImpacto dados={historicoImpacto} />
         </section>
 
+        <ServicosMonitorados dados={servicosMonitorados} />
+
         <section
           className="mt-8 grid grid-cols-1 gap-6 2xl:grid-cols-2"
           aria-label="Detalhes do monitoramento"
         >
-          <ServicosMonitorados dados={servicosMonitorados} />
 
+          <MapaServicos dados={servicosMonitorados} />
+          
           <UltimasColetas dados={ultimasColetas} />
         </section>
 
