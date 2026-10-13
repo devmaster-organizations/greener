@@ -131,4 +131,41 @@ it('rejeita uma resposta que não seja uma lista de serviços', async () => {
     'Resposta inválida do Agregador: esperada uma lista de serviços',
   );
 });
+it('rejeita um serviço sem metrics_path', async () => {
+  const fetchMock = vi.fn<typeof fetch>();
+
+  const respostaApi = [
+    {
+      id: 'billing-api',
+      name: 'Billing API',
+      location: {
+        region_code: 'br-sudeste',
+        country: 'Brazil',
+        region: 'Sudeste',
+        city: 'Sao Paulo',
+        latitude: -23.5505,
+        longitude: -46.6333,
+      },
+      // metrics_path ausente intencionalmente.
+    },
+  ];
+
+  fetchMock.mockResolvedValue(
+    new Response(JSON.stringify(respostaApi), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }),
+  );
+
+  const client = new AgregadorClient(
+    'https://metrics.unilaunch.org',
+    fetchMock,
+  );
+
+  await expect(client.listarServicos()).rejects.toThrow(
+    'Resposta inválida do Agregador: serviço no índice 0',
+  );
+});
 });

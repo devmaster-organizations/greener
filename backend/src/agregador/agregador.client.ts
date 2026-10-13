@@ -53,16 +53,24 @@ export class AgregadorClient {
 
 	const servicos = dados as ServicoAgregador[];
 
-    return servicos.map((servico) => ({
-      id: servico.id,
-      nome: servico.name,
-      regionCode: servico.location.region_code,
-      pais: servico.location.country,
-      regiao: servico.location.region,
-      cidade: servico.location.city,
-      latitude: servico.location.latitude,
-      longitude: servico.location.longitude,
-      metricsPath: servico.metrics_path,
-    }));
+    return servicos.map((servico, index) => {
+      if (!servico.metrics_path) {
+        throw new Error(
+          `Resposta inválida do Agregador: serviço no índice ${index} não possui metrics_path`,
+        );
+      }
+
+      return {
+        id: servico.id,
+        nome: servico.name,
+        regionCode: servico.location.region_code,
+        pais: servico.location.country,
+        regiao: servico.location.region,
+        cidade: servico.location.city,
+        latitude: servico.location.latitude,
+        longitude: servico.location.longitude,
+        metricsPath: servico.metrics_path,
+      };
+    });
   }
 }
