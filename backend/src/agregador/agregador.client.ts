@@ -54,11 +54,19 @@ export class AgregadorClient {
 	const servicos = dados as ServicoAgregador[];
 
     return servicos.map((servico, index) => {
-      if (!servico.metrics_path) {
-        throw new Error(
-          `Resposta inválida do Agregador: serviço no índice ${index} não possui metrics_path`,
-        );
-      }
+      if (
+		typeof servico?.id !== 'string' ||
+		servico.id.trim() === '' ||
+		typeof servico?.metrics_path !== 'string' ||
+		servico.metrics_path.trim() === '' ||
+		servico.location === null ||
+		typeof servico.location !== 'object' ||
+		Array.isArray(servico.location)
+		) {
+		throw new Error(
+			`Resposta inválida do Agregador: serviço no índice ${index}`,
+		);
+	}
 
       return {
         id: servico.id,
