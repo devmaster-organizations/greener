@@ -360,14 +360,22 @@ describe('AgregadorClient', () => {
       const client = new AgregadorClient(
         'https://metrics.unilaunch.org',
         fetchMock,
+        1000,
       );
 
-      const verificacao = expect(client.listarServicos()).rejects.toThrow(
-        'Tempo limite excedido ao consultar serviços',
+      const resultado = client.listarServicos().then(
+        (valor) => ({ valor, erro: undefined }),
+        (erro: unknown) => ({ valor: undefined, erro }),
       );
 
       await vi.advanceTimersByTimeAsync(1000);
-      await verificacao;
+
+      const { erro } = await resultado;
+
+      expect(erro).toBeInstanceOf(Error);
+      expect((erro as Error).message).toBe(
+        'Tempo limite excedido ao consultar serviços',
+      );
     } finally {
       vi.useRealTimers();
     }
