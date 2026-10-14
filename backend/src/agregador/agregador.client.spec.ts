@@ -235,43 +235,7 @@ describe('AgregadorClient', () => {
       'Resposta inválida do Agregador: serviço no índice 0',
     );
   });
-  it('rejeita um serviço sem region_code', async () => {
-    const fetchMock = vi.fn<typeof fetch>();
-
-    fetchMock.mockResolvedValue(
-      new Response(
-        JSON.stringify([
-          {
-            id: 'billing-api',
-            name: 'Billing API',
-            location: {
-              country: 'Brazil',
-              region: 'Sudeste',
-              city: 'Sao Paulo',
-              latitude: -23.5505,
-              longitude: -46.6333,
-            },
-            metrics_path: '/metrics/billing-api',
-          },
-        ]),
-        {
-          status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      ),
-    );
-
-    const client = new AgregadorClient(
-      'https://metrics.unilaunch.org',
-      fetchMock,
-    );
-
-    await expect(client.listarServicos()).rejects.toThrow(
-      'Resposta inválida do Agregador: serviço no índice 0',
-    );
-  });
+  
   it('rejeita um serviço sem region_code', async () => {
     const fetchMock = vi.fn<typeof fetch>();
 

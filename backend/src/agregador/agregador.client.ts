@@ -34,39 +34,39 @@ export class AgregadorClient {
     const url = new URL('/services', this.baseUrl);
 
     const resposta = await this.http(url, {
-	method: 'GET',
-	});
+      method: 'GET',
+    });
 
-	if (!resposta.ok) {
-	throw new Error(
-		`Falha ao consultar serviços: HTTP ${resposta.status}`,
-	);
-	}
+    if (!resposta.ok) {
+      throw new Error(`Falha ao consultar serviços: HTTP ${resposta.status}`);
+    }
 
     const dados: unknown = await resposta.json();
 
-	if (!Array.isArray(dados)) {
-	throw new Error(
-		'Resposta inválida do Agregador: esperada uma lista de serviços',
-	);
-	}
+    if (!Array.isArray(dados)) {
+      throw new Error(
+        'Resposta inválida do Agregador: esperada uma lista de serviços',
+      );
+    }
 
-	const servicos = dados as ServicoAgregador[];
+    const servicos = dados as ServicoAgregador[];
 
     return servicos.map((servico, index) => {
       if (
-		typeof servico?.id !== 'string' ||
-		servico.id.trim() === '' ||
-		typeof servico?.metrics_path !== 'string' ||
-		servico.metrics_path.trim() === '' ||
-		servico.location === null ||
-		typeof servico.location !== 'object' ||
-		Array.isArray(servico.location)
-		) {
-		throw new Error(
-			`Resposta inválida do Agregador: serviço no índice ${index}`,
-		);
-	}
+        typeof servico?.id !== 'string' ||
+        servico.id.trim() === '' ||
+        typeof servico?.metrics_path !== 'string' ||
+        servico.metrics_path.trim() === '' ||
+        servico.location === null ||
+        typeof servico.location !== 'object' ||
+        Array.isArray(servico.location) ||
+        typeof servico.location.region_code !== 'string' ||
+        servico.location.region_code.trim() === ''
+      ) {
+        throw new Error(
+          `Resposta inválida do Agregador: serviço no índice ${index}`,
+        );
+      }
 
       return {
         id: servico.id,
