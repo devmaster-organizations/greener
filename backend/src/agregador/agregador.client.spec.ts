@@ -311,4 +311,65 @@ describe('AgregadorClient', () => {
       'Resposta inválida do Agregador: serviço no índice 0',
     );
   });
+
+  it('retorna uma lista vazia quando não há serviços', async () => {
+    const fetchMock = vi.fn<typeof fetch>();
+
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify([]), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
+    );
+
+    const client = new AgregadorClient(
+      'https://metrics.unilaunch.org',
+      fetchMock,
+    );
+
+    await expect(client.listarServicos()).resolves.toEqual([]);
+  });
+
+  it('cancela a consulta quando excede o timeout', async () => {
+    vi.useFakeTimers();
+
+    try {
+      const fetchMock = vi.fn<typeof fetch>();
+
+      fetchMock.mockImplementation((_url, opcoes) => {
+        return new Promise<Response>((_resolve, reject) => {
+          const signal = opcoes?.signal;
+
+          if (!signal) {
+            reject(new Error('A requisição não recebeu um signal'));
+            return;
+          }
+
+          signal.addEventListener(
+            'abort',
+            () => {
+              reject(new DOMException('Consulta cancelada', 'AbortError'));
+            },
+            { once: true },
+          );
+        });
+      });
+
+      const client = new AgregadorClient(
+        'https://metrics.unilaunch.org',
+        fetchMock,
+      );
+
+      const verificacao = expect(client.listarServicos()).rejects.toThrow(
+        'Tempo limite excedido ao consultar serviços',
+      );
+
+      await vi.advanceTimersByTimeAsync(1000);
+      await verificacao;
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
