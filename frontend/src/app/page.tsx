@@ -1,11 +1,71 @@
-import Image from "next/image";
+import Sidebar from "../components/layout/Sidebar";
+import Header from "../components/layout/Header";
+
+import IndicadorCard from "../components/dashboard/IndicadorCard";
+import ImpactoPorServico from "../components/dashboard/ImpactoPorServico";
+import HistoricoImpacto from "../components/dashboard/HistoricoImpacto";
+import UltimasColetas from "../components/dashboard/UltimasColetas";
+import ServicosMonitorados from "../components/dashboard/ServicosMonitorados";
+import MapaServicos from "../components/dashboard/MapaServicos";
+
+import {
+  indicadoresDashboard,
+  impactoPorServico,
+  historicoImpacto,
+  ultimasColetas,
+  servicosMonitorados,
+} from "../data/mockDashboard";
+
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        GREENER
+
+    <div className="flex min-h-screen bg-gray-50">
+      <Sidebar />
+
+      <main className="min-w-0 flex-1 p-8">
+        <Header
+          titulo="Dashboard"
+          descricao="Monitoramento do impacto ambiental das aplicações."
+        />
+
+        <section
+          className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4"
+          aria-label="Indicadores ambientais"
+        >
+          {indicadoresDashboard.map((indicador) => (
+            <IndicadorCard
+              key={indicador.id}
+              titulo={indicador.titulo}
+              valor={indicador.valor}
+              descricao={indicador.descricao}
+            />
+          ))}
+        </section>
+
+
+        <section
+          className="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-2"
+          aria-label="Gráficos de impacto ambiental"
+        >
+          <ImpactoPorServico dados={impactoPorServico} />
+          <HistoricoImpacto dados={historicoImpacto} />
+        </section>
+
+        <ServicosMonitorados dados={servicosMonitorados} />
+
+        <section
+          className="mt-8 grid grid-cols-1 gap-6 2xl:grid-cols-2"
+          aria-label="Detalhes do monitoramento"
+        >
+
+          <MapaServicos dados={servicosMonitorados} />
+          
+          <UltimasColetas dados={ultimasColetas} />
+        </section>
+
       </main>
+
     </div>
   );
 }
