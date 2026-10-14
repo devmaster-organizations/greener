@@ -4,6 +4,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { ConfigModule } from '@nestjs/config';
 import { ServicosModule } from './servicos/servicos.module.js';
+import { AgregadorModule } from './agregador/agregador.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
