@@ -55,6 +55,8 @@ export class AgregadorClient {
       if (
         typeof servico?.id !== 'string' ||
         servico.id.trim() === '' ||
+        typeof servico?.name !== 'string' ||
+        servico.name.trim() === '' ||
         typeof servico?.metrics_path !== 'string' ||
         servico.metrics_path.trim() === '' ||
         servico.location === null ||
