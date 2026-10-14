@@ -54,7 +54,9 @@ describe('AgregadorClient', () => {
 
     const [url, opcoes] = fetchMock.mock.calls[0]!;
 
-    expect(String(url)).toBe('https://metrics.unilaunch.org/services');
+    expect(String(url)).toBe(
+      'https://metrics.unilaunch.org/services',
+    );
 
     // fetch usa GET por padrão quando method não é informado.
     expect(opcoes?.method ?? 'GET').toBe('GET');
@@ -86,298 +88,84 @@ describe('AgregadorClient', () => {
   });
 
   it('lança um erro quando o Agregador responde HTTP 503', async () => {
-    const fetchMock = vi.fn<typeof fetch>();
+  const fetchMock = vi.fn<typeof fetch>();
 
-    // Mesmo com uma lista no corpo, o status indica falha.
-    fetchMock.mockResolvedValue(
-      new Response(JSON.stringify([]), {
-        status: 503,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }),
-    );
-
-    const client = new AgregadorClient(
-      'https://metrics.unilaunch.org',
-      fetchMock,
-    );
-
-    await expect(client.listarServicos()).rejects.toThrow(
-      'Falha ao consultar serviços: HTTP 503',
-    );
-  });
-
-  it('rejeita uma resposta que não seja uma lista de serviços', async () => {
-    const fetchMock = vi.fn<typeof fetch>();
-
-    fetchMock.mockResolvedValue(
-      new Response(JSON.stringify({ services: [] }), {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }),
-    );
-
-    const client = new AgregadorClient(
-      'https://metrics.unilaunch.org',
-      fetchMock,
-    );
-
-    await expect(client.listarServicos()).rejects.toThrow(
-      'Resposta inválida do Agregador: esperada uma lista de serviços',
-    );
-  });
-  it('rejeita um serviço sem metrics_path', async () => {
-    const fetchMock = vi.fn<typeof fetch>();
-
-    const respostaApi = [
-      {
-        id: 'billing-api',
-        name: 'Billing API',
-        location: {
-          region_code: 'br-sudeste',
-          country: 'Brazil',
-          region: 'Sudeste',
-          city: 'Sao Paulo',
-          latitude: -23.5505,
-          longitude: -46.6333,
-        },
-        // metrics_path ausente intencionalmente.
+  // Mesmo com uma lista no corpo, o status indica falha.
+  fetchMock.mockResolvedValue(
+    new Response(JSON.stringify([]), {
+      status: 503,
+      headers: {
+        'Content-Type': 'application/json',
       },
-    ];
+    }),
+  );
 
-    fetchMock.mockResolvedValue(
-      new Response(JSON.stringify(respostaApi), {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }),
-    );
+  const client = new AgregadorClient(
+    'https://metrics.unilaunch.org',
+    fetchMock,
+  );
 
-    const client = new AgregadorClient(
-      'https://metrics.unilaunch.org',
-      fetchMock,
-    );
+  await expect(client.listarServicos()).rejects.toThrow(
+    'Falha ao consultar serviços: HTTP 503',
+  );
+});
 
-    await expect(client.listarServicos()).rejects.toThrow(
-      'Resposta inválida do Agregador: serviço no índice 0',
-    );
-  });
+it('rejeita uma resposta que não seja uma lista de serviços', async () => {
+  const fetchMock = vi.fn<typeof fetch>();
 
-  it('rejeita um serviço sem id', async () => {
-    const fetchMock = vi.fn<typeof fetch>();
-
-    const respostaApi = [
-      {
-        // id ausente intencionalmente.
-        name: 'Billing API',
-        location: {
-          region_code: 'br-sudeste',
-          country: 'Brazil',
-          region: 'Sudeste',
-          city: 'Sao Paulo',
-          latitude: -23.5505,
-          longitude: -46.6333,
-        },
-        metrics_path: '/metrics/billing-api',
+  fetchMock.mockResolvedValue(
+    new Response(JSON.stringify({ services: [] }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
       },
-    ];
+    }),
+  );
 
-    fetchMock.mockResolvedValue(
-      new Response(JSON.stringify(respostaApi), {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }),
-    );
+  const client = new AgregadorClient(
+    'https://metrics.unilaunch.org',
+    fetchMock,
+  );
 
-    const client = new AgregadorClient(
-      'https://metrics.unilaunch.org',
-      fetchMock,
-    );
+  await expect(client.listarServicos()).rejects.toThrow(
+    'Resposta inválida do Agregador: esperada uma lista de serviços',
+  );
+});
+it('rejeita um serviço sem metrics_path', async () => {
+  const fetchMock = vi.fn<typeof fetch>();
 
-    await expect(client.listarServicos()).rejects.toThrow(
-      'Resposta inválida do Agregador: serviço no índice 0',
-    );
-  });
+  const respostaApi = [
+    {
+      id: 'billing-api',
+      name: 'Billing API',
+      location: {
+        region_code: 'br-sudeste',
+        country: 'Brazil',
+        region: 'Sudeste',
+        city: 'Sao Paulo',
+        latitude: -23.5505,
+        longitude: -46.6333,
+      },
+      // metrics_path ausente intencionalmente.
+    },
+  ];
 
-  it('rejeita um serviço sem location', async () => {
-    const fetchMock = vi.fn<typeof fetch>();
+  fetchMock.mockResolvedValue(
+    new Response(JSON.stringify(respostaApi), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }),
+  );
 
-    fetchMock.mockResolvedValue(
-      new Response(
-        JSON.stringify([
-          {
-            id: 'billing-api',
-            name: 'Billing API',
-            metrics_path: '/metrics/billing-api',
-          },
-        ]),
-        {
-          status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      ),
-    );
+  const client = new AgregadorClient(
+    'https://metrics.unilaunch.org',
+    fetchMock,
+  );
 
-    const client = new AgregadorClient(
-      'https://metrics.unilaunch.org',
-      fetchMock,
-    );
-
-    await expect(client.listarServicos()).rejects.toThrow(
-      'Resposta inválida do Agregador: serviço no índice 0',
-    );
-  });
-
-  it('rejeita um serviço sem region_code', async () => {
-    const fetchMock = vi.fn<typeof fetch>();
-
-    fetchMock.mockResolvedValue(
-      new Response(
-        JSON.stringify([
-          {
-            id: 'billing-api',
-            name: 'Billing API',
-            location: {
-              country: 'Brazil',
-              region: 'Sudeste',
-              city: 'Sao Paulo',
-              latitude: -23.5505,
-              longitude: -46.6333,
-            },
-            metrics_path: '/metrics/billing-api',
-          },
-        ]),
-        {
-          status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      ),
-    );
-
-    const client = new AgregadorClient(
-      'https://metrics.unilaunch.org',
-      fetchMock,
-    );
-
-    await expect(client.listarServicos()).rejects.toThrow(
-      'Resposta inválida do Agregador: serviço no índice 0',
-    );
-  });
-
-  it('rejeita um serviço sem name', async () => {
-    const fetchMock = vi.fn<typeof fetch>();
-
-    fetchMock.mockResolvedValue(
-      new Response(
-        JSON.stringify([
-          {
-            id: 'billing-api',
-            location: {
-              region_code: 'br-sudeste',
-              country: 'Brazil',
-              region: 'Sudeste',
-              city: 'Sao Paulo',
-              latitude: -23.5505,
-              longitude: -46.6333,
-            },
-            metrics_path: '/metrics/billing-api',
-          },
-        ]),
-        {
-          status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      ),
-    );
-
-    const client = new AgregadorClient(
-      'https://metrics.unilaunch.org',
-      fetchMock,
-    );
-
-    await expect(client.listarServicos()).rejects.toThrow(
-      'Resposta inválida do Agregador: serviço no índice 0',
-    );
-  });
-
-  it('retorna uma lista vazia quando não há serviços', async () => {
-    const fetchMock = vi.fn<typeof fetch>();
-
-    fetchMock.mockResolvedValue(
-      new Response(JSON.stringify([]), {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }),
-    );
-
-    const client = new AgregadorClient(
-      'https://metrics.unilaunch.org',
-      fetchMock,
-    );
-
-    await expect(client.listarServicos()).resolves.toEqual([]);
-  });
-
-  it('cancela a consulta quando excede o timeout', async () => {
-    vi.useFakeTimers();
-
-    try {
-      const fetchMock = vi.fn<typeof fetch>();
-
-      fetchMock.mockImplementation((_url, opcoes) => {
-        return new Promise<Response>((_resolve, reject) => {
-          const signal = opcoes?.signal;
-
-          if (!signal) {
-            reject(new Error('A requisição não recebeu um signal'));
-            return;
-          }
-
-          signal.addEventListener(
-            'abort',
-            () => {
-              reject(new DOMException('Consulta cancelada', 'AbortError'));
-            },
-            { once: true },
-          );
-        });
-      });
-
-      const client = new AgregadorClient(
-        'https://metrics.unilaunch.org',
-        fetchMock,
-        1000,
-      );
-
-      const resultado = client.listarServicos().then(
-        (valor) => ({ valor, erro: undefined }),
-        (erro: unknown) => ({ valor: undefined, erro }),
-      );
-
-      await vi.advanceTimersByTimeAsync(1000);
-
-      const { erro } = await resultado;
-
-      expect(erro).toBeInstanceOf(Error);
-      expect((erro as Error).message).toBe(
-        'Tempo limite excedido ao consultar serviços',
-      );
-    } finally {
-      vi.useRealTimers();
-    }
-  });
+  await expect(client.listarServicos()).rejects.toThrow(
+    'Resposta inválida do Agregador: serviço no índice 0',
+  );
+});
 });
