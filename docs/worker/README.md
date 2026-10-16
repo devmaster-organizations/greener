@@ -40,29 +40,20 @@ A cada ciclo, o Worker:
 
 Quatro containers: **frontend, backend, worker e postgres**.
 
-```
-                    ┌───────────────────────────────────────────┐
-                    │            metrics.unilaunch.org           │
-                    │            carbon.unilaunch.org            │
-                    └───────────────▲───────────────▲───────────┘
-                                    │ HTTP          │ HTTP
-                    ┌───────────────┴───────────────┴───────────┐
-                    │                  WORKER                     │
-                    │      (NestJS standalone — sem HTTP)         │
-                    └───────────────────┬─────────────────────────┘
-                                        │ SQL (Prisma)
-                    ┌───────────────────▼─────────────────────────┐
-                    │               POSTGRESQL                     │
-                    │        tabelas: servicos, coletas            │
-                    └───────────────────▲─────────────────────────┘
-                                        │ SQL (Prisma)
-                    ┌───────────────────┴─────────────────────────┐
-                    │             BACKEND (NestJS HTTP)            │
-                    └───────────────────▲─────────────────────────┘
-                                        │ HTTP (REST)
-                    ┌───────────────────┴─────────────────────────┐
-                    │             FRONTEND (Next.js / React)       │
-                    └──────────────────────────────────────────────┘
+``` mermaid
+flowchart BT
+    M["metrics.unilaunch.org"]
+    C["carbon.unilaunch.org"]
+    W["WORKER<br/>(NestJS standalone — sem HTTP)"]
+    DB[("POSTGRESQL<br/>tabelas: servicos, coletas")]
+    B["BACKEND (NestJS HTTP)"]
+    F["FRONTEND (Next.js / React)"]
+
+    W -->|HTTP| M
+    W -->|HTTP| C
+    DB -->|"SQL (Prisma)"| W
+    B -->|"SQL (Prisma)"| DB
+    F -->|"HTTP (REST)"| B
 ```
 
 Backend e Worker compartilham **a mesma imagem** Docker, com `command` diferente:

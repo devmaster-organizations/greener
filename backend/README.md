@@ -128,6 +128,50 @@ milissegundos. A cada ciclo o Worker descobre os serviços, coleta as métricas,
 calcula os indicadores e grava uma `Coleta` no histórico, atualizando o estado
 do serviço (`ATIVO`, `INDISPONIVEL`, `SEM_METRICAS` ou `REMOVIDO`).
 
+## Verificação do banco (scripts)
+
+Scripts de conferência das tabelas ficam em `backend/test/`:
+
+| Arquivo | Função |
+|---|---|
+| `conferir-tabelas.sql` | Consultas SQL (rodam via `psql` ou no DBeaver). |
+| `conferir-tabelas.sh` | Executa o `.sql` no container do Postgres. |
+
+**Pré-requisitos:** containers no ar (`docker compose up -d`) e pelo menos um
+ciclo de coleta do Worker já executado.
+
+Executar (de qualquer pasta do repositório):
+
+```bash
+bash backend/test/conferir-tabelas.sh
+```
+
+Para rodar no **DBeaver**: conecte em `localhost:5434`, banco `greener`,
+usuário `greener`, senha `greener_dev`, e abra o `conferir-tabelas.sql`.
+
+### O que o script verifica
+
+1. **Tabelas existentes** — devem aparecer `servicos`, `coletas` e
+   `_prisma_migrations`.
+2. **Contagem de linhas** — `servicos` e `coletas`.
+3. **Serviços monitorados** — id, `status`, `region_code` e `ultima_coleta_at`.
+4. **Últimas coletas** — métricas e indicadores calculados
+   (`potencia_w`, `energia_kwh`, `carbon_intensity`, `co2e_g`).
+5. **Coletas por serviço** — total por serviço e a última coleta.
+
+### Resultados esperados
+
+- `servicos` com **uma linha por serviço** descoberto pelo Worker, sempre com
+  `status` entre `ATIVO`, `INDISPONIVEL`, `SEM_METRICAS` e `REMOVIDO`.
+- `coletas` com **N linhas ≈ (serviços × número de ciclos)** — cresce a cada
+  intervalo de coleta (`COLETA_INTERVALO_MS`).
+- `ultima_coleta_at` recente (dentro do intervalo de coleta).
+- Os indicadores fecham a fórmula:
+  `co2e_g = energia_kwh × carbon_intensity` e
+  `energia_kwh = potencia_w × (intervalo_s / 3600) / 1000`.
+- Serviços saudáveis aparecem como `ATIVO`; sem métricas como `SEM_METRICAS`
+  (HTTP 404); indisponíveis como `INDISPONIVEL` (HTTP 500).
+
 ## Encerrar o ambiente
 
 Encerre o backend com `Ctrl+C`.
