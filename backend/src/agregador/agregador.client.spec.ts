@@ -380,4 +380,100 @@ describe('AgregadorClient', () => {
       vi.useRealTimers();
     }
   });
+
+  describe('coletarMetricas', () => {
+    function resposta(status: number, corpo: unknown): Response {
+      return new Response(JSON.stringify(corpo), {
+        status,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    it('retorna ATIVO com as métricas mapeadas (HTTP 200)', async () => {
+      const fetchMock = vi.fn<typeof fetch>();
+
+      fetchMock.mockResolvedValue(
+        resposta(200, {
+          collection_interval_seconds: 43,
+          metrics: {
+            cpu_percent: 72.46,
+            memory_gb: 3.09,
+            disk_gb: 18.39,
+            network_gb: 0.68,
+          },
+        }),
+      );
+
+      const client = new AgregadorClient(
+        'https://metrics.unilaunch.org',
+        fetchMock,
+      );
+
+      await expect(client.coletarMetricas('billing-api')).resolves.toEqual({
+        estado: 'ATIVO',
+        intervaloColetaSegundos: 43,
+        metricas: {
+          cpuPercent: 72.46,
+          memoryGb: 3.09,
+          diskGb: 18.39,
+          networkGb: 0.68,
+        },
+      });
+    });
+
+    it('retorna SEM_METRICAS quando não há métricas (HTTP 404)', async () => {
+      const fetchMock = vi.fn<typeof fetch>();
+
+      fetchMock.mockResolvedValue(
+        resposta(404, {
+          error: 'metrics_not_found',
+          message: 'not available',
+        }),
+      );
+
+      const client = new AgregadorClient(
+        'https://metrics.unilaunch.org',
+        fetchMock,
+      );
+
+      await expect(client.coletarMetricas('billing-api')).resolves.toEqual({
+        estado: 'SEM_METRICAS',
+      });
+    });
+
+    it('retorna INDISPONIVEL quando o serviço está indisponível (HTTP 500)', async () => {
+      const fetchMock = vi.fn<typeof fetch>();
+
+      fetchMock.mockResolvedValue(
+        resposta(500, {
+          error: 'service_unavailable',
+          message: 'unavailable',
+        }),
+      );
+
+      const client = new AgregadorClient(
+        'https://metrics.unilaunch.org',
+        fetchMock,
+      );
+
+      await expect(client.coletarMetricas('billing-api')).resolves.toEqual({
+        estado: 'INDISPONIVEL',
+      });
+    });
+
+    it('retorna INDISPONIVEL em falha de rede', async () => {
+      const fetchMock = vi.fn<typeof fetch>();
+
+      fetchMock.mockRejectedValue(new Error('falha de rede'));
+
+      const client = new AgregadorClient(
+        'https://metrics.unilaunch.org',
+        fetchMock,
+      );
+
+      await expect(client.coletarMetricas('billing-api')).resolves.toEqual({
+        estado: 'INDISPONIVEL',
+      });
+    });
+  });
 });

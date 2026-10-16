@@ -8,8 +8,10 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { AgregadorClient } from '../agregador/agregador.client.js';
-import type { ResultadoMetricas } from '../agregador/agregador.client.js';
-import type { ServicoAgregador } from '../agregador/agregador.types.js';
+import type {
+  ResultadoMetricas,
+  ServicoDescoberto,
+} from '../agregador/agregador.client.js';
 import { CarbonClient } from '../carbon/carbon.client.js';
 import { ColetasRepository } from '../coletas/coletas.repository.js';
 import {
@@ -88,7 +90,7 @@ export class MonitoramentoService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async executarCicloInterno(): Promise<void> {
-    let descobertos: ServicoAgregador[];
+    let descobertos: ServicoDescoberto[];
 
     try {
       descobertos = await this.agregador.listarServicos();
@@ -116,7 +118,7 @@ export class MonitoramentoService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  private async coletarDoServico(servico: ServicoAgregador): Promise<void> {
+  private async coletarDoServico(servico: ServicoDescoberto): Promise<void> {
     try {
       const resultado = await this.agregador.coletarMetricas(servico.id);
       const agora = new Date();
@@ -158,7 +160,7 @@ export class MonitoramentoService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async registrarColetaAtiva(
-    servico: ServicoAgregador,
+    servico: ServicoDescoberto,
     resultado: ResultadoAtivo,
   ): Promise<void> {
     const { metricas, intervaloColetaSegundos } = resultado;
@@ -173,7 +175,7 @@ export class MonitoramentoService implements OnModuleInit, OnModuleDestroy {
     let carbonIntensity: number | null = null;
     let co2eG: number | null = null;
 
-    const regionCode = servico.location?.region_code;
+    const regionCode = servico.regionCode;
     if (regionCode) {
       const intensidade = await this.carbon.obterIntensidade(regionCode);
       if (intensidade) {
@@ -205,19 +207,17 @@ export class MonitoramentoService implements OnModuleInit, OnModuleDestroy {
     );
   }
 
-  private mapearServico(servico: ServicoAgregador): SalvarServicoInput {
-    const localizacao = servico.location;
-
+  private mapearServico(servico: ServicoDescoberto): SalvarServicoInput {
     return {
       id: servico.id,
-      nome: servico.name,
-      regionCode: localizacao?.region_code ?? 'desconhecida',
-      metricsPath: servico.metrics_path,
-      pais: localizacao?.country ?? null,
-      regiao: localizacao?.region ?? null,
-      cidade: localizacao?.city ?? null,
-      latitude: localizacao?.latitude ?? null,
-      longitude: localizacao?.longitude ?? null,
+      nome: servico.nome,
+      regionCode: servico.regionCode,
+      metricsPath: servico.metricsPath,
+      pais: servico.pais,
+      regiao: servico.regiao,
+      cidade: servico.cidade,
+      latitude: servico.latitude,
+      longitude: servico.longitude,
     };
   }
 }

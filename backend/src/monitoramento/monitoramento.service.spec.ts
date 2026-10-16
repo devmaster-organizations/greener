@@ -2,24 +2,22 @@ import { describe, expect, it, vi } from 'vitest';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { AgregadorClient } from '../agregador/agregador.client.js';
-import type { ServicoAgregador } from '../agregador/agregador.types.js';
+import type { ServicoDescoberto } from '../agregador/agregador.client.js';
 import { CarbonClient } from '../carbon/carbon.client.js';
 import { ColetasRepository } from '../coletas/coletas.repository.js';
 import { ServicosRepository } from '../servicos/servicos.repository.js';
 import { MonitoramentoService } from './monitoramento.service.js';
 
-const SERVICO: ServicoAgregador = {
+const SERVICO: ServicoDescoberto = {
   id: 'billing-api',
-  name: 'Billing API',
-  metrics_path: '/metrics/billing-api',
-  location: {
-    region_code: 'br-sudeste',
-    country: 'Brazil',
-    region: 'Sudeste',
-    city: 'Sao Paulo',
-    latitude: -23.5505,
-    longitude: -46.6333,
-  },
+  nome: 'Billing API',
+  regionCode: 'br-sudeste',
+  pais: 'Brazil',
+  regiao: 'Sudeste',
+  cidade: 'Sao Paulo',
+  latitude: -23.5505,
+  longitude: -46.6333,
+  metricsPath: '/metrics/billing-api',
 };
 
 const METRICAS_ATIVO = {
@@ -77,6 +75,7 @@ describe('MonitoramentoService', () => {
         id: 'billing-api',
         nome: 'Billing API',
         regionCode: 'br-sudeste',
+        metricsPath: '/metrics/billing-api',
         latitude: -23.5505,
         longitude: -46.6333,
       }),
@@ -160,9 +159,9 @@ describe('MonitoramentoService', () => {
 
   it('não sobrepõe ciclos concorrentes', async () => {
     const { service, agregador } = criarServico();
-    let resolver!: (servicos: ServicoAgregador[]) => void;
+    let resolver!: (servicos: ServicoDescoberto[]) => void;
     agregador.listarServicos.mockReturnValue(
-      new Promise<ServicoAgregador[]>((resolve) => {
+      new Promise<ServicoDescoberto[]>((resolve) => {
         resolver = resolve;
       }),
     );
