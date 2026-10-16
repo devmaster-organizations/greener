@@ -99,6 +99,35 @@ e executa uma consulta real ao PostgreSQL.
 Atualmente, esse teste utiliza `SELECT 1` e não exige tabelas
 no banco de testes.
 
+## Worker (coleta em background)
+
+O Worker é um processo NestJS **sem servidor HTTP**, responsável pela coleta
+periódica de métricas, pelo cálculo de energia e CO₂e e pela persistência do
+histórico. Ele reaproveita os módulos do backend (`PrismaService`,
+`ServicosRepository`) por meio de um módulo próprio (`WorkerModule`).
+
+Para executá-lo (com o PostgreSQL iniciado e as migrations aplicadas):
+
+```bash
+npm run start:worker   # executa dist/worker/main.js
+# ou, em desenvolvimento:
+npm run worker:dev
+```
+
+Variáveis de ambiente utilizadas pelo Worker:
+
+```dotenv
+AGREGADOR_BASE_URL=https://metrics.unilaunch.org
+AGREGADOR_TIMEOUT_MS=5000
+CARBON_BASE_URL=https://carbon.unilaunch.org
+COLETA_INTERVALO_MS=30000
+```
+
+`COLETA_INTERVALO_MS` define o intervalo entre os ciclos de coleta, em
+milissegundos. A cada ciclo o Worker descobre os serviços, coleta as métricas,
+calcula os indicadores e grava uma `Coleta` no histórico, atualizando o estado
+do serviço (`ATIVO`, `INDISPONIVEL`, `SEM_METRICAS` ou `REMOVIDO`).
+
 ## Encerrar o ambiente
 
 Encerre o backend com `Ctrl+C`.

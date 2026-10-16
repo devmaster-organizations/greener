@@ -28,5 +28,28 @@ model Servico {
   createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
 
+  coletas       Coleta[]
+
   @@map("servicos")
+}
+
+model Coleta {
+  id              String   @id @default(uuid())
+  servicoId       String   @map("servico_id") @db.VarChar(100)
+  servico         Servico  @relation(fields: [servicoId], references: [id], onDelete: Cascade)
+  coletadaAt      DateTime @map("coletada_at") @db.Timestamptz(3)
+  cpuPercent      Decimal? @map("cpu_percent") @db.Decimal(5, 2)
+  memoryGb        Decimal? @map("memory_gb") @db.Decimal(10, 3)
+  diskGb          Decimal? @map("disk_gb") @db.Decimal(10, 3)
+  networkGb       Decimal? @map("network_gb") @db.Decimal(10, 3)
+  potenciaW       Decimal? @map("potencia_w") @db.Decimal(12, 4)
+  energiaKwh      Decimal? @map("energia_kwh") @db.Decimal(18, 10)
+  carbonIntensity Decimal? @map("carbon_intensity") @db.Decimal(10, 3)
+  co2eG           Decimal? @map("co2e_g") @db.Decimal(18, 10)
+  status          String   @db.VarChar(30)
+  erro            String?  @db.Text
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@index([servicoId, coletadaAt])
+  @@map("coletas")
 }
