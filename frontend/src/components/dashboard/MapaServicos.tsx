@@ -1,8 +1,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
-import type { LatLngExpression } from "leaflet";
+import dynamic from "next/dynamic";
 
 interface ServicoMapa {
   id: number;
@@ -18,17 +17,19 @@ interface MapaServicosProps {
   dados: ServicoMapa[];
 }
 
+const Mapa = dynamic(
+  () => import("./MapaServicosLeaflet"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex min-h-[320px] items-center justify-center bg-[#F7FAF7] text-sm text-[#52666A]">
+        Carregando mapa...
+      </div>
+    ),
+  }
+);
+
 export default function MapaServicos({ dados }: MapaServicosProps) {
-  const [Mapa, setMapa] = useState<React.ComponentType<{
-    dados: ServicoMapa[];
-  }> | null>(null);
-
-  useEffect(() => {
-    import("./MapaServicosLeaflet").then((modulo) => {
-      setMapa(() => modulo.default);
-    });
-  }, []);
-
   return (
     <section className="rounded-xl border border-[#DCE8DF] bg-white p-6 shadow-sm">
       <div className="mb-5">
@@ -42,13 +43,7 @@ export default function MapaServicos({ dados }: MapaServicosProps) {
       </div>
 
       <div className="min-h-[320px] overflow-hidden rounded-lg">
-        {Mapa ? (
-          <Mapa dados={dados} />
-        ) : (
-          <div className="flex min-h-[320px] items-center justify-center bg-[#F7FAF7] text-sm text-[#52666A]">
-            Carregando mapa...
-          </div>
-        )}
+        <Mapa dados={dados} />
       </div>
     </section>
   );
