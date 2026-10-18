@@ -73,7 +73,7 @@ export default function Sidebar() {
 
           <li>
             <a
-              href="#configuracoes"
+              href="/configuracoes"
               className="block rounded-lg px-4 py-3 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
             >
               Configurações
