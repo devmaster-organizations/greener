@@ -1,3 +1,8 @@
+x-backend: &backend
+  build:
+    context: ./backend
+  image: greener-backend:local
+
 services:
   postgres:
     image: postgres:16
@@ -14,6 +19,49 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  # Aplica as migrations e encerra. Backend e Worker só sobem depois.
+  migrate:
+    <<: *backend
+    command: ["npx", "prisma", "migrate", "deploy"]
+    environment: &backend-env
+      DATABASE_URL: postgresql://greener:greener_dev@postgres:5432/greener?schema=public
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # API HTTP consumida pelo frontend.
+  backend:
+    <<: *backend
+    command: ["node", "dist/main.js"]
+    environment:
+      <<: *backend-env
+      PORT: "3001"
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  # Worker: mesmo código/imagem, mas sem HTTP, executando a coleta em background.
+  worker:
+    <<: *backend
+    command: ["node", "dist/worker/main.js"]
+    environment:
+      <<: *backend-env
+      AGREGADOR_BASE_URL: https://metrics.unilaunch.org
+      AGREGADOR_TIMEOUT_MS: "5000"
+      CARBON_BASE_URL: https://carbon.unilaunch.org
+      COLETA_INTERVALO_MS: "30000"
+      # Evita tentar IPv6 quando a rede do container não tem rota IPv6.
+      NODE_OPTIONS: --dns-result-order=ipv4first
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
 
 volumes:
   postgres_data:

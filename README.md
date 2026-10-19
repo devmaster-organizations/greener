@@ -52,8 +52,9 @@ fórmulas, dos fatores e das métricas utilizados.
 | `backend/` | API, integrações, regras do sistema e persistência. |
 | `backend/prisma/` | Schema do banco e migrations. |
 | `backend/src/prisma/` | Integração do Prisma com o NestJS. |
+| `backend/src/worker/` | Entrypoint do Worker (coleta em background, sem HTTP). |
 | `request/` | Requisições de referência para as APIs externas. |
-| `compose.yaml` | Configuração do PostgreSQL para desenvolvimento local. |
+| `compose.yml` | Configuração dos containers (PostgreSQL, migrations, backend e Worker). |
 
 ## Estado atual
 
@@ -62,11 +63,28 @@ fórmulas, dos fatores e das métricas utilizados.
 - Prisma integrado ao NestJS.
 - Modelo inicial de serviços e migration criados.
 - Teste de integração da conexão com PostgreSQL implementado.
+- Worker de coleta implementado: descoberta de serviços, coleta de métricas,
+  cálculo de energia e CO₂e, persistência do histórico e classificação de estado.
+- Execução containerizada: PostgreSQL, migrations, backend e Worker.
 
-As funcionalidades de descoberta, coleta, cálculos e visualização
+A visualização (dashboard, ranking e comparação) e a autenticação
 serão desenvolvidas nas próximas entregas.
 
 ## Executar localmente
+
+### Stack completa (Docker Compose)
+
+Na raiz do repositório, sobe o PostgreSQL, aplica as migrations e inicia o
+backend e o Worker. O Worker usa a **mesma imagem** do backend, porém com
+`command` diferente (`node dist/worker/main.js`) e **sem expor porta HTTP**:
+
+```bash
+docker compose up -d --build
+docker compose ps
+docker compose logs -f worker
+```
+
+O frontend ainda não está containerizado nesta etapa.
 
 ### Backend
 
@@ -91,6 +109,7 @@ A interface estará disponível em http://localhost:3000.
 | Frontend | http://localhost:3000 |
 | Backend | http://localhost:3001 |
 | PostgreSQL | localhost:5434 |
+| Worker | sem porta (processo de background em container) |
 
 As portas devem corresponder à configuração local do projeto.
 
