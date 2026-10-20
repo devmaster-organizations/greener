@@ -11,7 +11,7 @@ import { AgregadorClient } from '../agregador/agregador.client.js';
 import type {
   ResultadoMetricas,
   ServicoDescoberto,
-} from '../agregador/agregador.client.js';
+} from '../agregador/agregador.types.js';
 import { CarbonClient } from '../carbon/carbon.client.js';
 import { ColetasRepository } from '../coletas/coletas.repository.js';
 import {
@@ -128,6 +128,7 @@ export class MonitoramentoService implements OnModuleInit, OnModuleDestroy {
           servicoId: servico.id,
           coletadaAt: agora,
           status: StatusColeta.SemMetricas,
+          erro: resultado.erro,
         });
         await this.servicos.atualizarStatus(
           servico.id,
@@ -142,6 +143,7 @@ export class MonitoramentoService implements OnModuleInit, OnModuleDestroy {
           servicoId: servico.id,
           coletadaAt: agora,
           status: StatusColeta.Indisponivel,
+          erro: resultado.erro,
         });
         await this.servicos.atualizarStatus(
           servico.id,

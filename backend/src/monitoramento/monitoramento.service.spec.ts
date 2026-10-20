@@ -87,6 +87,7 @@ describe('MonitoramentoService', () => {
     expect(coleta.energiaKwh).toBeCloseTo(0.0008478333, 9);
     expect(coleta.carbonIntensity).toBe(85);
     expect(coleta.co2eG).toBeCloseTo(0.0720658, 6);
+    expect(coleta.erro).toBeUndefined();
 
     expect(servicos.atualizarStatus).toHaveBeenCalledWith(
       'billing-api',
@@ -98,7 +99,10 @@ describe('MonitoramentoService', () => {
 
   it('classifica o serviço como INDISPONIVEL quando a coleta retorna 500', async () => {
     const { service, agregador, servicos, coletas } = criarServico();
-    agregador.coletarMetricas.mockResolvedValue({ estado: 'INDISPONIVEL' });
+    agregador.coletarMetricas.mockResolvedValue({
+      estado: 'INDISPONIVEL',
+      erro: 'HTTP 500 — serviço indisponível',
+    });
 
     await service.executarCiclo();
 
@@ -106,6 +110,7 @@ describe('MonitoramentoService', () => {
       expect.objectContaining({
         servicoId: 'billing-api',
         status: 'INDISPONIVEL',
+        erro: 'HTTP 500 — serviço indisponível',
       }),
     );
     expect(servicos.atualizarStatus).toHaveBeenCalledWith(
@@ -117,7 +122,10 @@ describe('MonitoramentoService', () => {
 
   it('classifica o serviço como SEM_METRICAS quando a coleta retorna 404', async () => {
     const { service, agregador, servicos, coletas } = criarServico();
-    agregador.coletarMetricas.mockResolvedValue({ estado: 'SEM_METRICAS' });
+    agregador.coletarMetricas.mockResolvedValue({
+      estado: 'SEM_METRICAS',
+      erro: 'HTTP 404 — métricas não disponíveis',
+    });
 
     await service.executarCiclo();
 
@@ -125,6 +133,7 @@ describe('MonitoramentoService', () => {
       expect.objectContaining({
         servicoId: 'billing-api',
         status: 'SEM_METRICAS',
+        erro: 'HTTP 404 — métricas não disponíveis',
       }),
     );
     expect(servicos.atualizarStatus).toHaveBeenCalledWith(

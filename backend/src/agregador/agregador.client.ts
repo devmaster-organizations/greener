@@ -1,56 +1,16 @@
-import type { MetricasConsumo } from '../dominio/calculo-ambiental.js';
+import type {
+  RespostaMetricasBruta,
+  ResultadoMetricas,
+  ServicoAgregador,
+  ServicoDescoberto,
+} from './agregador.types.js';
 
-export interface ServicoDescoberto {
-  id: string;
-  nome: string;
-  regionCode: string;
-  pais: string;
-  regiao: string;
-  cidade: string;
-  latitude: number;
-  longitude: number;
-  metricsPath: string;
-}
-
-/**
- * Resultado da coleta de métricas de um serviço.
- *
- * - `ATIVO`: métricas obtidas com sucesso (HTTP 200).
- * - `SEM_METRICAS`: serviço listado, mas sem métricas disponíveis (HTTP 404).
- * - `INDISPONIVEL`: serviço indisponível ou falha de rede (HTTP 500 / timeout).
- */
-export type ResultadoMetricas =
-  | {
-      estado: 'ATIVO';
-      intervaloColetaSegundos: number;
-      metricas: MetricasConsumo;
-    }
-  | { estado: 'SEM_METRICAS' }
-  | { estado: 'INDISPONIVEL' };
-
-interface RespostaMetricasBruta {
-  collection_interval_seconds: number;
-  metrics: {
-    cpu_percent: number;
-    memory_gb: number;
-    disk_gb: number;
-    network_gb: number;
-  };
-}
-
-interface ServicoAgregador {
-  id: string;
-  name: string;
-  location: {
-    region_code: string;
-    country: string;
-    region: string;
-    city: string;
-    latitude: number;
-    longitude: number;
-  };
-  metrics_path: string;
-}
+export type {
+  RespostaMetricasBruta,
+  ResultadoMetricas,
+  ServicoAgregador,
+  ServicoDescoberto,
+} from './agregador.types.js';
 
 export class AgregadorClient {
   constructor(
@@ -162,12 +122,28 @@ export class AgregadorClient {
       }
 
       if (resposta.status === 404) {
-        return { estado: 'SEM_METRICAS' };
+        return {
+          estado: 'SEM_METRICAS',
+          erro: 'HTTP 404 — métricas não disponíveis',
+        };
       }
 
-      return { estado: 'INDISPONIVEL' };
-    } catch {
-      return { estado: 'INDISPONIVEL' };
+      return {
+        estado: 'INDISPONIVEL',
+        erro: `HTTP ${resposta.status} — serviço indisponível`,
+      };
+    } catch (erro) {
+      if (controller.signal.aborted) {
+        return {
+          estado: 'INDISPONIVEL',
+          erro: 'Tempo limite excedido ao coletar métricas',
+        };
+      }
+
+      return {
+        estado: 'INDISPONIVEL',
+        erro: erro instanceof Error ? erro.message : String(erro),
+      };
     } finally {
       clearTimeout(timer);
     }
