@@ -122,12 +122,28 @@ export class AgregadorClient {
       }
 
       if (resposta.status === 404) {
-        return { estado: 'SEM_METRICAS' };
+        return {
+          estado: 'SEM_METRICAS',
+          erro: 'HTTP 404 — métricas não disponíveis',
+        };
       }
 
-      return { estado: 'INDISPONIVEL' };
-    } catch {
-      return { estado: 'INDISPONIVEL' };
+      return {
+        estado: 'INDISPONIVEL',
+        erro: `HTTP ${resposta.status} — serviço indisponível`,
+      };
+    } catch (erro) {
+      if (controller.signal.aborted) {
+        return {
+          estado: 'INDISPONIVEL',
+          erro: 'Tempo limite excedido ao coletar métricas',
+        };
+      }
+
+      return {
+        estado: 'INDISPONIVEL',
+        erro: erro instanceof Error ? erro.message : String(erro),
+      };
     } finally {
       clearTimeout(timer);
     }

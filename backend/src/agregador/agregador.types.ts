@@ -25,8 +25,8 @@ export type ResultadoMetricas =
       intervaloColetaSegundos: number;
       metricas: MetricasConsumo;
     }
-  | { estado: 'SEM_METRICAS' }
-  | { estado: 'INDISPONIVEL' };
+  | { estado: 'SEM_METRICAS'; erro: string }
+  | { estado: 'INDISPONIVEL'; erro: string };
 
 export interface RespostaMetricasBruta {
   collection_interval_seconds: number;

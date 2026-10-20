@@ -438,6 +438,7 @@ describe('AgregadorClient', () => {
 
       await expect(client.coletarMetricas('billing-api')).resolves.toEqual({
         estado: 'SEM_METRICAS',
+        erro: 'HTTP 404 — métricas não disponíveis',
       });
     });
 
@@ -458,6 +459,7 @@ describe('AgregadorClient', () => {
 
       await expect(client.coletarMetricas('billing-api')).resolves.toEqual({
         estado: 'INDISPONIVEL',
+        erro: 'HTTP 500 — serviço indisponível',
       });
     });
 
@@ -473,6 +475,7 @@ describe('AgregadorClient', () => {
 
       await expect(client.coletarMetricas('billing-api')).resolves.toEqual({
         estado: 'INDISPONIVEL',
+        erro: 'falha de rede',
       });
     });
   });

@@ -128,6 +128,7 @@ export class MonitoramentoService implements OnModuleInit, OnModuleDestroy {
           servicoId: servico.id,
           coletadaAt: agora,
           status: StatusColeta.SemMetricas,
+          erro: resultado.erro,
         });
         await this.servicos.atualizarStatus(
           servico.id,
@@ -142,6 +143,7 @@ export class MonitoramentoService implements OnModuleInit, OnModuleDestroy {
           servicoId: servico.id,
           coletadaAt: agora,
           status: StatusColeta.Indisponivel,
+          erro: resultado.erro,
         });
         await this.servicos.atualizarStatus(
           servico.id,
