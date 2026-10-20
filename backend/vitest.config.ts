@@ -9,5 +9,8 @@ export default defineConfig({
     globals: true,
     root: './',
     include: ['**/*.spec.ts'],
+    // Os testes de integração compartilham o mesmo PostgreSQL (greener_test);
+    // arquivos em paralelo poderiam apagar os dados uns dos outros.
+    fileParallelism: false,
   },
 });
