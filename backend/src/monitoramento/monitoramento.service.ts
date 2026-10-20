@@ -11,7 +11,7 @@ import { AgregadorClient } from '../agregador/agregador.client.js';
 import type {
   ResultadoMetricas,
   ServicoDescoberto,
-} from '../agregador/agregador.client.js';
+} from '../agregador/agregador.types.js';
 import { CarbonClient } from '../carbon/carbon.client.js';
 import { ColetasRepository } from '../coletas/coletas.repository.js';
 import {
