@@ -63,6 +63,50 @@ A aplicação estará disponível em:
 
 http://localhost:3001
 
+## API REST
+
+Endpoints de leitura dos dados persistidos pelo Worker. Todas as respostas são
+JSON; valores decimais do banco são convertidos para número.
+
+### Serviços
+
+| Rota | Descrição |
+|---|---|
+| `GET /servicos` | Lista os serviços com status e localização. |
+| `GET /servicos/:id` | Detalhes de um serviço. Devolve `404` se não existir. |
+
+Campos: `id`, `nome`, `status` (`ATIVO`, `INDISPONIVEL`, `SEM_METRICAS`,
+`REMOVIDO`), `regionCode`, `pais`, `regiao`, `cidade`, `latitude`, `longitude`,
+`metricsPath`, `ultimaColetaAt`, `createdAt`, `updatedAt`.
+
+### Coletas
+
+| Rota | Descrição |
+|---|---|
+| `GET /coletas` | Histórico de coletas, do mais recente para o mais antigo. |
+
+Parâmetros de query (opcionais):
+
+| Parâmetro | Descrição | Padrão |
+|---|---|---|
+| `servicoId` | Filtra por serviço. | — |
+| `de` | Data inicial (ISO 8601). | — |
+| `ate` | Data final (ISO 8601). | — |
+| `limit` | Quantidade máxima (1–500). | `50` |
+
+Cada item inclui o nome do serviço (`servicoNome`), as métricas, os indicadores
+(`energiaKwh`, `co2eG`), o `status` e o `erro` preenchido quando houve falha.
+
+### Dashboard
+
+| Rota | Descrição |
+|---|---|
+| `GET /dashboard/indicadores` | Energia total (kWh), CO₂e total (g), nº de coletas, serviços monitorados e indisponíveis. |
+| `GET /dashboard/historico` | CO₂e e energia agrupados por dia (`[{ dia, energiaKwh, co2eG }]`). |
+| `GET /dashboard/impacto-por-servico` | Soma de energia e CO₂e por serviço, do maior para o menor. |
+
+Os três aceitam `de` e `ate` (ISO 8601) para restringir o período.
+
 ## Build e execução do código compilado
 
 ```bash
