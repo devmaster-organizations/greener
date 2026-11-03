@@ -47,6 +47,23 @@ export class ServicosRepository {
     return this.prisma.servico.findMany();
   }
 
+  async buscarPorId(id: string): Promise<Servico | null> {
+    return this.prisma.servico.findUnique({ where: { id } });
+  }
+
+  /** Serviços que continuam sob monitoramento (exclui os removidos do agregador). */
+  async contarMonitorados(): Promise<number> {
+    return this.prisma.servico.count({
+      where: { status: { not: StatusServico.Removido } },
+    });
+  }
+
+  async contarIndisponiveis(): Promise<number> {
+    return this.prisma.servico.count({
+      where: { status: StatusServico.Indisponivel },
+    });
+  }
+
   async atualizarStatus(
     id: string,
     status: StatusServico,

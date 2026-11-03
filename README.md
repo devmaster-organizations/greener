@@ -67,33 +67,59 @@ fórmulas, dos fatores e das métricas utilizados.
   cálculo de energia e CO₂e, persistência do histórico e classificação de estado.
 - Execução containerizada: PostgreSQL, migrations, backend e Worker.
 
-A visualização (dashboard, ranking e comparação) e a autenticação
-serão desenvolvidas nas próximas entregas.
+O dashboard ainda utiliza dados simulados no frontend. A autenticação
+de login já está integrada à API (`POST /auth/login`).
 
 ## Executar localmente
 
-### Stack completa (Docker Compose)
+### Stack completa (Docker Compose) — jeito recomendado
 
-Na raiz do repositório, sobe o PostgreSQL, aplica as migrations e inicia o
-backend e o Worker. O Worker usa a **mesma imagem** do backend, porém com
-`command` diferente (`node dist/worker/main.js`) e **sem expor porta HTTP**:
+Na raiz do repositório, **um único comando** sobe tudo: PostgreSQL, aplica as
+migrations, inicia o backend, o Worker e o frontend:
 
 ```bash
 docker compose up -d --build
-docker compose ps
-docker compose logs -f worker
 ```
 
-O frontend ainda não está containerizado nesta etapa.
+| Serviço | O que faz | Endereço |
+|---|---|---|
+| `frontend` | Next.js | http://localhost:3000 |
+| `backend` | API REST (NestJS) | http://localhost:3001 |
+| `worker` | Coleta em background (sem porta) | — |
+| `migrate` | Aplica migrations e encerra | — |
+| `postgres` | PostgreSQL 16 | localhost:5434 |
 
-### Backend
+Comandos úteis:
+
+```bash
+docker compose ps                  # status dos containers
+docker compose logs -f worker      # acompanhar os ciclos de coleta (a cada 30s)
+docker compose logs -f backend     # logs da API
+docker compose down                # para tudo (mantém os dados)
+docker compose down -v             # para tudo e apaga o banco
+docker compose up -d --build       # sobe de novo após mudanças
+```
+
+O Worker usa a **mesma imagem** do backend, porém com `command` diferente
+(`node dist/worker/main.js`) e **sem expor porta HTTP**. Ele consome o
+Agregador de Métricas e a API de Carbono externos, portanto precisa de
+acesso à internet para coletar dados.
+
+Para conferir se está tudo funcionando:
+
+```bash
+curl localhost:3001/servicos            # serviços descobertos pelo Worker
+curl localhost:3001/dashboard/indicadores  # energia, CO₂e e contagens
+```
+
+### Backend (desenvolvimento, fora do Docker)
 
 Consulte o [guia do backend](backend/README.md) para instalar
 as dependências, configurar o ambiente, preparar o banco e executar os testes.
 
-### Frontend
+### Frontend (desenvolvimento, fora do Docker)
 
-Na pasta `frontend`:
+Na pasta `frontend` (com o backend acessível em `http://localhost:3001`):
 
 ```bash
 npm ci
@@ -101,6 +127,13 @@ npm run dev
 ```
 
 A interface estará disponível em http://localhost:3000.
+
+Usuário padrão criado pelas migrations:
+
+```text
+E-mail: admin@greener.com
+Senha:  greener123
+```
 
 ### Endereços locais
 
