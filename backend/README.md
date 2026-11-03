@@ -68,6 +68,43 @@ http://localhost:3001
 Endpoints de leitura dos dados persistidos pelo Worker. Todas as respostas são
 JSON; valores decimais do banco são convertidos para número.
 
+### Autenticação
+
+| Rota | Descrição |
+|---|---|
+| `POST /auth/login` | Autentica e devolve um token JWT. |
+
+Corpo da requisição:
+
+```json
+{ "email": "admin@greener.com", "password": "greener123" }
+```
+
+Resposta (`200`):
+
+```json
+{
+  "access_token": "<jwt>",
+  "usuario": {
+    "id": "00000000-0000-4000-8000-000000000001",
+    "nome": "Administrador GreenER",
+    "email": "admin@greener.com"
+  }
+}
+```
+
+Credenciais inválidas devolvem `401`; campos ausentes devolvem `400`.
+
+A migration `add_usuarios` cria o usuário padrão de desenvolvimento
+`admin@greener.com` / `greener123`. A senha é armazenada como hash bcrypt.
+
+Variáveis de ambiente relacionadas:
+
+```dotenv
+JWT_SECRET=greener-dev-secret
+JWT_EXPIRES_IN_SECONDS=86400
+```
+
 ### Serviços
 
 | Rota | Descrição |

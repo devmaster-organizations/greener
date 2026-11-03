@@ -33,6 +33,17 @@ model Servico {
   @@map("servicos")
 }
 
+model Usuario {
+  id        String   @id @default(uuid())
+  nome      String   @db.VarChar(150)
+  email     String   @unique @db.VarChar(255)
+  senhaHash String   @map("senha_hash") @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@map("usuarios")
+}
+
 model Coleta {
   id              String   @id @default(uuid())
   servicoId       String   @map("servico_id") @db.VarChar(100)

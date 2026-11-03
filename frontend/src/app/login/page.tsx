@@ -2,15 +2,18 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { login } from '../../lib/auth';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setErrorMessage('');
@@ -21,13 +24,24 @@ export default function LoginPage() {
       return;
     }
 
-    // Login simulado para a primeira Sprint
     setIsLoading(true);
-    setSuccessMessage('Login realizado com sucesso! Redirecionando...');
 
-    setTimeout(() => {
-      window.location.href = '/dashboard';
-    }, 1500);
+    try {
+      await login(email, password);
+
+      setSuccessMessage('Login realizado com sucesso! Redirecionando...');
+
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 1500);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Erro ao conectar ao servidor. Tente novamente mais tarde.',
+      );
+      setIsLoading(false);
+    }
   };
 
   return (

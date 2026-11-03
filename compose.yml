@@ -6,6 +6,7 @@ x-backend: &backend
 services:
   postgres:
     image: postgres:16
+    container_name: greener-postgres
     environment:
       POSTGRES_DB: greener
       POSTGRES_USER: greener
@@ -26,6 +27,8 @@ services:
     command: ["npx", "prisma", "migrate", "deploy"]
     environment: &backend-env
       DATABASE_URL: postgresql://greener:greener_dev@postgres:5432/greener?schema=public
+      JWT_SECRET: ${JWT_SECRET:-greener-dev-secret}
+      JWT_EXPIRES_IN_SECONDS: ${JWT_EXPIRES_IN_SECONDS:-86400}
     depends_on:
       postgres:
         condition: service_healthy
@@ -62,6 +65,18 @@ services:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully
+
+  # Frontend (Next.js). O browser consome a API diretamente na porta 3001,
+  # por isso NEXT_PUBLIC_API_URL aponta para o host e não para o container.
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:3001
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:
