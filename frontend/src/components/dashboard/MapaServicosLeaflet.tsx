@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -11,19 +10,22 @@ import {
 
 import { useEffect } from "react";
 import type { LatLngExpression } from "leaflet";
-
-interface ServicoMapa {
-  id: number;
-  nome: string;
-  cidade: string;
-  regiao: string;
-  latitude: number;
-  longitude: number;
-  status: "Online" | "Indisponível";
-}
+import type { ServicoMapa } from "./mapa-servicos.types";
 
 interface MapaServicosLeafletProps {
   dados: ServicoMapa[];
+}
+
+function estiloStatus(status: string) {
+  if (status === "Online") {
+    return { color: "#087443", fillColor: "#159447" };
+  }
+
+  if (status === "Sem métricas") {
+    return { color: "#8A6D1F", fillColor: "#C9A227" };
+  }
+
+  return { color: "#A64B12", fillColor: "#F59E0B" };
 }
 
 function AjustarVisualizacao({ dados }: MapaServicosLeafletProps) {
@@ -72,10 +74,7 @@ export default function MapaServicosLeaflet({
           center={[servico.latitude, servico.longitude]}
           radius={9}
           pathOptions={{
-            color:
-              servico.status === "Online" ? "#087443" : "#D97732",
-            fillColor:
-              servico.status === "Online" ? "#159447" : "#F59E0B",
+            ...estiloStatus(servico.status),
             fillOpacity: 0.9,
             weight: 2,
           }}
@@ -84,11 +83,10 @@ export default function MapaServicosLeaflet({
             <div className="text-sm">
               <strong>{servico.nome}</strong>
               <p>
-                {servico.cidade}, {servico.regiao}
+                {[servico.cidade, servico.regiao].filter(Boolean).join(", ") ||
+                  "Localização não informada"}
               </p>
-              <p>
-                Status: {servico.status}
-              </p>
+              <p>Status: {servico.status}</p>
             </div>
           </Popup>
         </CircleMarker>
