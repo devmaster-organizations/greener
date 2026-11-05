@@ -116,4 +116,64 @@ describe('ServicosController (integração)', () => {
 
     expect(resposta.body.message).toBe('Serviço "nao-existe" não encontrado');
   });
+
+  it('GET /servicos não retorna serviços marcados como REMOVIDO por padrão', async () => {
+    const idRemovido = `teste-removido-${randomUUID()}`;
+
+    await prisma.servico.create({
+      data: {
+        id: idRemovido,
+        nome: 'Serviço Removido',
+        regionCode: 'br-sudeste',
+        pais: 'Brazil',
+        regiao: 'Sudeste',
+        cidade: 'Sao Paulo',
+        latitude: -23.5505,
+        longitude: -46.6333,
+        metricsPath: '/metrics/removido',
+        status: 'REMOVIDO',
+      },
+    });
+
+    try {
+      const resposta = await request(app.getHttpServer())
+        .get('/servicos')
+        .expect(200);
+
+      const ids = resposta.body.map((item: { id: string }) => item.id);
+      expect(ids).not.toContain(idRemovido);
+    } finally {
+      await prisma.servico.deleteMany({ where: { id: idRemovido } });
+    }
+  });
+
+  it('GET /servicos?status=REMOVIDO retorna serviços removidos', async () => {
+    const idRemovido = `teste-removido-${randomUUID()}`;
+
+    await prisma.servico.create({
+      data: {
+        id: idRemovido,
+        nome: 'Serviço Removido',
+        regionCode: 'br-sudeste',
+        pais: 'Brazil',
+        regiao: 'Sudeste',
+        cidade: 'Sao Paulo',
+        latitude: -23.5505,
+        longitude: -46.6333,
+        metricsPath: '/metrics/removido',
+        status: 'REMOVIDO',
+      },
+    });
+
+    try {
+      const resposta = await request(app.getHttpServer())
+        .get('/servicos?status=REMOVIDO')
+        .expect(200);
+
+      const ids = resposta.body.map((item: { id: string }) => item.id);
+      expect(ids).toContain(idRemovido);
+    } finally {
+      await prisma.servico.deleteMany({ where: { id: idRemovido } });
+    }
+  });
 });
