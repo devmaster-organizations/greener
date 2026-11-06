@@ -1,0 +1,147 @@
+@startuml backend-api
+title Backend — API HTTP (controllers, services e repositórios)
+
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+package "Módulos de entrada (HTTP)" {
+
+  class AppController {
+    + getHello(): string
+  }
+
+  class ServicosController {
+    + listar(): ServicoResponse[]
+    + detalhar(id: string): ServicoResponse
+  }
+
+  class ColetasController {
+    + listar(servicoId?, de?, ate?, limit?): ColetaResponse[]
+  }
+
+  class DashboardController {
+    + indicadores(de?, ate?): IndicadoresResponse
+    + historico(de?, ate?): ColetaPorDia[]
+    + impactoPorServico(de?, ate?): ImpactoServico[]
+  }
+
+  class AuthController {
+    + login(body: LoginRequest): LoginResponse
+  }
+}
+
+package "Services" {
+  class AppService {
+    + getHello(): string
+  }
+
+  class AuthService {
+    + autenticar(email: string, senha: string): LoginResponse
+  }
+}
+
+package "Repositórios (acesso a dados)" {
+  class ServicosRepository {
+    + salvar(servico: SalvarServicoInput): void
+    + listar(): Servico[]
+    + buscarPorId(id: string): Servico | null
+    + contarMonitorados(): number
+    + contarIndisponiveis(): number
+    + atualizarStatus(id, status, quando): void
+    + marcarRemovidosExceto(idsAtivos: string[]): number
+  }
+
+  class ColetasRepository {
+    + registrar(coleta: RegistrarColetaInput): void
+    + listar(filtros: FiltrosColetas): ColetaComServico[]
+    + somarTotais(filtro: FiltroPeriodo): TotalColetas
+    + co2ePorDia(filtro: FiltroPeriodo): ColetaPorDia[]
+    + agruparPorServico(filtro: FiltroPeriodo): ImpactoServico[]
+  }
+}
+
+package "Persistência" {
+  class PrismaService {
+    + onModuleInit(): void
+    + onModuleDestroy(): void
+  }
+
+  class Usuario {
+    + id: string
+    + nome: string
+    + email: string
+    + senhaHash: string
+  }
+
+  class Servico {
+    + id: string
+    + nome: string
+    + regionCode: string
+    + pais: string
+    + regiao: string
+    + cidade: string
+    + latitude: Decimal
+    + longitude: Decimal
+    + metricsPath: string
+    + status: string
+    + ultimaColetaAt: DateTime
+  }
+
+  class Coleta {
+    + id: string
+    + servicoId: string
+    + coletadaAt: DateTime
+    + cpuPercent: Decimal
+    + memoryGb: Decimal
+    + diskGb: Decimal
+    + networkGb: Decimal
+    + potenciaW: Decimal
+    + energiaKwh: Decimal
+    + carbonIntensity: Decimal
+    + co2eG: Decimal
+    + status: string
+    + erro: string
+  }
+}
+
+' ---------------- controllers → services/repos ----------------
+AppController --> AppService
+ServicosController --> ServicosRepository
+ColetasController --> ColetasRepository
+DashboardController --> ColetasRepository
+DashboardController --> ServicosRepository
+AuthController --> AuthService
+
+AuthService --> PrismaService
+ServicosRepository --> PrismaService
+ColetasRepository --> PrismaService
+
+' ---------------- modelo de dados ----------------
+PrismaService ..> Usuario : usuarios
+PrismaService ..> Servico : servicos
+PrismaService ..> Coleta : coletas
+Servico "1" o-- "0..*" Coleta : coletas
+
+note right of ServicosController
+  GET /servicos
+  GET /servicos/:id
+end note
+
+note right of ColetasController
+  GET /coletas
+  ?servicoId=&de=&ate=&limit=
+  (limit 1..500, default 50)
+end note
+
+note right of DashboardController
+  GET /dashboard/indicadores
+  GET /dashboard/historico
+  GET /dashboard/impacto-por-servico
+end note
+
+note right of AuthController
+  POST /auth/login
+  { email, password } → { access_token, usuario }
+end note
+
+@enduml

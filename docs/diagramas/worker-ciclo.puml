@@ -1,0 +1,92 @@
+@startuml worker-ciclo
+title Worker — ciclo de coleta (MonitoramentoService.executarCiclo)
+
+skinparam shadowing false
+skinparam maxMessageSize 120
+
+actor "SchedulerRegistry\n@nestjs/schedule" as SCH
+participant "MonitoramentoService" as MS
+participant "AgregadorClient" as AC
+participant "CarbonClient" as CC
+participant "ServicosRepository" as SR
+participant "ColetasRepository" as CR
+database "PostgreSQL" as DB
+participant "domínio\n(funções puras)" as DOM
+
+== Inicialização ==
+SCH -> MS : onModuleInit()
+MS -> MS : lê COLETA_INTERVALO_MS (default 30 s)
+MS -> SCH : addInterval("coleta-metricas", timer)
+MS -> MS : executarCiclo() imediato
+
+== Disparo periódico ==
+SCH -> MS : executarCiclo()
+
+alt emExecucao == true
+  MS --> SCH : warn "Ciclo anterior ainda em execução" (retorna)
+else ciclo livre
+  MS -> MS : emExecucao = true
+
+  == 1. Descoberta ==
+  MS -> AC : listarServicos()
+  alt agregador indisponível
+    AC --> MS : erro
+    MS -> MS : log "Agregador indisponível; ciclo encerrado"
+    MS -> MS : emExecucao = false
+  else sucesso
+    AC --> MS : ServicoDescoberto[]
+
+    == 2. Sincronização do inventário ==
+    loop cada serviço descoberto
+      MS -> SR : salvar(mapearServico(s))
+      SR -> DB : upsert em servicos
+    end
+
+    == 3. Coleta por serviço ==
+    loop cada serviço descoberto
+      MS -> AC : coletarMetricas(id)
+
+      alt HTTP 200 → ATIVO
+        AC --> MS : metricas + intervaloColetaSegundos
+        MS -> DOM : estimarPotenciaWatts(metricas)
+        DOM --> MS : potenciaW
+        MS -> DOM : estimarEnergiaKwh(potenciaW, intervalo)
+        DOM --> MS : energiaKwh
+        MS -> CC : obterIntensidade(regionCode)
+        alt cache hit
+          CC --> MS : IntensidadeCarbono (memória)
+        else cache miss
+          CC -> CC : GET /regions/{code}/carbon-intensity
+          CC --> MS : IntensidadeCarbono ou null
+        end
+        MS -> DOM : estimarCo2eGramas(energiaKwh, intensidade)
+        DOM --> MS : co2eG
+        MS -> CR : registrar(coleta: métricas + calculados)
+        CR -> DB : INSERT em coletas
+        MS -> SR : atualizarStatus(id, ATIVO, agora)
+        SR -> DB : UPDATE servicos
+      else HTTP 404 → SEM_METRICAS
+        AC --> MS : { estado: SEM_METRICAS }
+        MS -> CR : registrar(status = SEM_METRICAS)
+        CR -> DB : INSERT em coletas
+        MS -> SR : atualizarStatus(id, SEM_METRICAS, agora)
+        SR -> DB : UPDATE servicos
+      else HTTP 500 / timeout / rede → INDISPONIVEL
+        AC --> MS : { estado: INDISPONIVEL }
+        MS -> CR : registrar(status = INDISPONIVEL)
+        CR -> DB : INSERT em coletas
+        MS -> SR : atualizarStatus(id, INDISPONIVEL, agora)
+        SR -> DB : UPDATE servicos
+      end
+    end
+
+    == 4. Reconciliação ==
+    MS -> SR : marcarRemovidosExceto(idsAtuais)
+    SR -> DB : UPDATE servicos SET status = REMOVIDO\nWHERE id NOT IN (...)
+    SR --> MS : quantidade de removidos
+
+    MS -> MS : emExecucao = false
+  end
+end
+
+@enduml
