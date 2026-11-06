@@ -1,0 +1,57 @@
+@startuml worker-info
+title Worker — estados do serviço e transições
+
+skinparam shadowing false
+skinparam state {
+  BackgroundColor White
+  BorderColor Black
+}
+
+state "ATIVO" as ATIVO
+state "SEM_METRICAS" as SEM
+state "INDISPONIVEL" as IND
+state "REMOVIDO" as REM
+
+[*] --> ATIVO : descoberto em /services\n+ GET /metrics/{id} = 200
+[*] --> SEM : descoberto em /services\n+ GET /metrics/{id} = 404
+[*] --> IND : descoberto em /services\n+ 500 / timeout / falha de rede
+
+ATIVO --> SEM : 404
+ATIVO --> IND : 500 / timeout
+SEM --> ATIVO : 200
+SEM --> IND : 500 / timeout
+IND --> ATIVO : 200 (retorno)
+IND --> SEM : 404
+
+ATIVO --> REM : ausente em /services
+SEM --> REM : ausente em /services
+IND --> REM : ausente em /services
+
+REM --> ATIVO : reaparece em /services\n+ 200
+REM --> SEM : reaparece em /services\n+ 404
+REM --> IND : reaparece em /services\n+ 500 / timeout
+
+note right of ATIVO
+  Métricas coletadas com sucesso.
+  Gera coleta com valores calculados:
+  potencia_w, energia_kwh, co2e_g.
+end note
+
+note right of SEM
+  Listado em /services, mas o
+  endpoint de métricas responde 404.
+  Coleta registrada sem cálculos.
+end note
+
+note right of IND
+  Serviço não responde:
+  500, timeout ou erro de rede.
+  Coleta registrada sem cálculos.
+end note
+
+note right of REM
+  Não aparece mais em /services.
+  Aplicado por marcarRemovidosExceto(ids).
+end note
+
+@enduml

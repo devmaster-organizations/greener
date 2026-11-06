@@ -1,0 +1,140 @@
+@startuml backend-worker
+title GreenER — Visão de componentes (backend, worker, frontend)
+
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam defaultFontName SansSerif
+
+actor "Usuário" as USER
+
+cloud "Agregador de Métricas\nmetrics.unilaunch.org" as AGREG
+cloud "Carbon Intensity API\ncarbon.unilaunch.org" as CARBON
+
+node "Docker Compose" {
+
+  component "frontend\nNext.js 16 + React 19\n:3000" as FE
+  database "PostgreSQL 16\ngreener\n5434:5432" as DB
+  component "migrate\nprisma migrate deploy\n(one-shot)" as MIG
+
+  package "backend — node dist/main.js (:3001)" {
+    component "main.ts\nNestFactory.create()\nenableCors()" as BE_MAIN
+    component "AppModule" as APP_MOD
+    component "ConfigModule\n(isGlobal)" as BE_CFG
+    component "ObserveModule\n@nestjs/observe" as OBS
+
+    component "AppController\nGET /" as APP_CTRL
+    component "ServicosController\nGET /servicos\nGET /servicos/:id" as SRV_CTRL
+    component "ColetasController\nGET /coletas" as COL_CTRL
+    component "DashboardController\nGET /dashboard/indicadores\nGET /dashboard/historico\nGET /dashboard/impacto-por-servico" as DASH_CTRL
+    component "AuthController\nPOST /auth/login" as AUTH_CTRL
+
+    component "AppService" as APP_SVC
+    component "ServicosRepository" as SRV_REPO_B
+    component "ColetasRepository" as COL_REPO_B
+    component "AuthService\nJwtService + bcryptjs" as AUTH_SVC
+    component "PrismaService" as PRISMA_B
+  }
+
+  package "worker — node dist/worker/main.js (sem HTTP)" {
+    component "worker/main.ts\nNestFactory.createApplicationContext()" as WK_MAIN
+    component "WorkerModule" as WK_MOD
+    component "ScheduleModule.forRoot()" as SCHED
+    component "ConfigModule\n(isGlobal)" as WK_CFG
+
+    component "MonitoramentoModule" as MON_MOD
+    component "MonitoramentoService\nonModuleInit()\nexecutarCiclo()" as MON_SVC
+
+    component "AgregadorModule" as AGG_MOD
+    component "AgregadorClient\nlistarServicos()\ncoletarMetricas()" as AGG_CLI
+    component "CarbonModule" as CARB_MOD
+    component "CarbonClient\ncache por regionCode" as CARB_CLI
+    component "ServicosModule" as SRV_MOD
+    component "ServicosRepository" as SRV_REPO_W
+    component "ColetasModule" as COL_MOD
+    component "ColetasRepository" as COL_REPO_W
+    component "PrismaModule" as PRISMA_MOD
+    component "PrismaService" as PRISMA_W
+
+    package "dominio (funções puras, sem I/O)" {
+      component "calculo-ambiental.ts\nestimarPotenciaWatts\nestimarEnergiaKwh\nestimarCo2eGramas" as DOM_CALC
+      component "status-servico.ts\nATIVO · INDISPONIVEL\nSEM_METRICAS · REMOVIDO" as DOM_ST
+    }
+  }
+}
+
+' ---------------- frontend ----------------
+USER --> FE : HTTP
+FE --> SRV_CTRL : GET /servicos
+FE --> COL_CTRL : GET /coletas
+FE --> DASH_CTRL : GET /dashboard/*
+FE --> AUTH_CTRL : POST /auth/login
+
+' ---------------- backend ----------------
+BE_MAIN --> APP_MOD
+APP_MOD --> BE_CFG
+APP_MOD --> OBS
+APP_MOD --> APP_CTRL
+APP_MOD --> SRV_CTRL
+APP_MOD --> COL_CTRL
+APP_MOD --> DASH_CTRL
+APP_MOD --> AUTH_CTRL
+
+APP_CTRL --> APP_SVC
+SRV_CTRL --> SRV_REPO_B
+COL_CTRL --> COL_REPO_B
+DASH_CTRL --> COL_REPO_B
+DASH_CTRL --> SRV_REPO_B
+AUTH_CTRL --> AUTH_SVC
+AUTH_SVC --> PRISMA_B
+
+SRV_REPO_B --> PRISMA_B
+COL_REPO_B --> PRISMA_B
+
+' ---------------- worker ----------------
+WK_MAIN --> WK_MOD
+WK_MOD --> WK_CFG
+WK_MOD --> SCHED
+WK_MOD --> PRISMA_MOD
+WK_MOD --> MON_MOD
+
+MON_MOD --> AGG_MOD
+MON_MOD --> CARB_MOD
+MON_MOD --> SRV_MOD
+MON_MOD --> COL_MOD
+MON_MOD --> MON_SVC
+
+AGG_MOD --> AGG_CLI
+CARB_MOD --> CARB_CLI
+SRV_MOD --> SRV_REPO_W
+COL_MOD --> COL_REPO_W
+PRISMA_MOD --> PRISMA_W
+SRV_MOD --> PRISMA_MOD
+COL_MOD --> PRISMA_MOD
+
+MON_SVC --> AGG_CLI
+MON_SVC --> CARB_CLI
+MON_SVC --> SRV_REPO_W
+MON_SVC --> COL_REPO_W
+MON_SVC --> DOM_CALC
+MON_SVC --> DOM_ST
+SCHED ..> MON_SVC : intervalo "coleta-metricas"\nCOLETA_INTERVALO_MS
+
+' ---------------- infra / externos ----------------
+AGG_CLI --> AGREG : GET /services\nGET /metrics/{id}
+CARB_CLI --> CARBON : GET /regions/{code}\n/carbon-intensity
+PRISMA_B --> DB : Prisma + adapter-pg
+PRISMA_W --> DB : Prisma + adapter-pg
+MIG --> DB
+
+note bottom of MON_SVC
+  Guarda "emExecucao" impede ciclos sobrepostos.
+  Falha de um serviço não derruba o ciclo.
+end note
+
+note right of APP_MOD
+  ObserveModule ainda usa
+  YOUR_APP_KEY / YOUR_APP_SECRET.
+end note
+
+@enduml

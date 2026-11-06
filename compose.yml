@@ -57,7 +57,7 @@ services:
       AGREGADOR_BASE_URL: https://metrics.unilaunch.org
       AGREGADOR_TIMEOUT_MS: "5000"
       CARBON_BASE_URL: https://carbon.unilaunch.org
-      COLETA_INTERVALO_MS: "30000"
+      COLETA_INTERVALO_MS: "60000"
       # Evita tentar IPv6 quando a rede do container não tem rota IPv6.
       NODE_OPTIONS: --dns-result-order=ipv4first
     depends_on:
