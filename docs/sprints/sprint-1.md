@@ -13,10 +13,10 @@
 
 | Campo | Valor |
 |-------|-------|
-| Início | 27/03/2026 (kick-off do projeto ABP) |
-| Término | 04/05/2026 |
+| Início | 29/09/2026 (kick-off do projeto ABP) |
+| Término | 20/10/2026 |
 
-> **Nota:** O período foi confirmado no board do GitHub Projects (`devmaster-organizations/greener`) e consta na documentação do repositório.
+
 
 ---
 
@@ -104,7 +104,7 @@ Entregar a **base do GreenER**: ambiente containerizado, backend com API REST, b
 | **RP08** | Gestão ágil (backlog priorizado) | ⚠️ | `Epicos_US_tasks.md` cobre o Worker; pendente para o projeto todo |
 | **RP09** | Evidências de IHC | ✅ | `docs/atividade-ui-ux/` |
 
-> **Nota:** Nenhum RF é afirmado como concluído sem link de código, PR ou teste associado.
+
 
 ---
 
@@ -127,7 +127,7 @@ Entregar a **base do GreenER**: ambiente containerizado, backend com API REST, b
 |-------|--------|--------|------|
 | #37 | [F01.1] Ciclo de vida e remoção de serviços (RF02) | Open | [#37](https://github.com/devmaster-organizations/greener/issues/37) |
 
-> **Nota:** Os links de PR foram verificados nos remotos do repositório `devmaster-organizations/greener`. Todos apontam para o GitHub da organização.
+
 
 ---
 
@@ -218,11 +218,3 @@ Tests       30 passed (30)
 
 ---
 
-## 📖 Legenda das Disciplinas
-
-| Sigla | Disciplina |
-|-------|------------|
-| ES | Engenharia de Software |
-| TP | Técnicas de Programação |
-| DW | Desenvolvimento Web |
-| BD | Banco de Dados relacional |
