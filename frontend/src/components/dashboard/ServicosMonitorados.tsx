@@ -145,7 +145,10 @@ export default function ServicosMonitorados() {
   };
 
   return (
-    <section className="mt-8 rounded-xl border border-[#DCE8DF] bg-white p-6 shadow-sm">
+    <section
+      id="servicos"
+      className="mt-8 rounded-xl border border-[#DCE8DF] bg-white p-6 shadow-sm"
+    >
       <div className="mb-5">
         <h2 className="text-lg font-semibold text-[#18343C]">
           Serviços monitorados
