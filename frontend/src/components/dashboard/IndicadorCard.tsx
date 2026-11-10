@@ -11,7 +11,7 @@ export default function IndicadorCard({
   descricao,
 }: IndicadorCardProps) {
   return (
-    <article className="h-full rounded-xl border border-[#DCE8DF] bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+    <article className="h-full rounded-xl border border-[#DCE8DF] bg-white p-6 shadow-sm transition-all duration-[1200ms] ease-in-out hover:border-green-300 hover:shadow-[0_8px_24px_rgba(34,197,94,0.20)] hover:scale-[1.03]">
       <h2 className="text-sm font-medium leading-relaxed text-[#52666A]">
         {titulo}
       </h2>
