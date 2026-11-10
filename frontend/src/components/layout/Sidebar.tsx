@@ -1,5 +1,18 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const LINKS = [
+  { href: "/dashboard", rotulo: "Dashboard" },
+  { href: "/servicos", rotulo: "Serviços" },
+  { href: "/configuracoes", rotulo: "Configurações" },
+  { href: "/login", rotulo: "Login" },
+];
 
 export default function Sidebar() {
+  const pathname = usePathname();
+
   return (
     <aside className="flex min-h-screen w-64 flex-col bg-[#064E2D] p-6 text-white">
       <div className="mb-10 flex items-center gap-3">
@@ -34,61 +47,27 @@ export default function Sidebar() {
 
       <nav aria-label="Menu principal">
         <ul className="space-y-2">
-          <li>
-            <a
-              href="/"
-              aria-current="page"
-              className="block rounded-lg bg-[#159447] px-4 py-3 font-semibold text-white"
-            >
-              Dashboard
-            </a>
-          </li>
+          {LINKS.map((link) => {
+            const ativo =
+              pathname === link.href ||
+              pathname.startsWith(`${link.href}/`);
 
-          <li>
-            <a
-              href="#servicos"
-              className="block rounded-lg px-4 py-3 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Serviços
-            </a>
-          </li>
-
-          <li>
-            <a
-              href="#historico"
-              className="block rounded-lg px-4 py-3 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Histórico
-            </a>
-          </li>
-
-          <li>
-            <a
-              href="#comparacoes"
-              className="block rounded-lg px-4 py-3 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Comparações
-            </a>
-          </li>
-
-          <li>
-            <a
-              href="/configuracoes"
-              className="block rounded-lg px-4 py-3 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Configurações
-            </a>
-          </li>
-          
-          <li>
-            <a
-              href="/login"
-              className="block rounded-lg px-4 py-3 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Login
-            </a>
-          </li>
-
+            return (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  aria-current={ativo ? "page" : undefined}
+                  className={
+                    ativo
+                      ? "block rounded-lg bg-[#159447] px-4 py-3 font-semibold text-white"
+                      : "block rounded-lg px-4 py-3 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+                  }
+                >
+                  {link.rotulo}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </nav>
 

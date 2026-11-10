@@ -26,12 +26,19 @@ export default function Home() {
                     descricao="Monitoramento do impacto ambiental das aplicações."
                 />
 
-                <div className="mb-4">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                     <Link
                         href="/"
                         className="inline-flex items-center gap-2 text-green-700 hover:text-green-900 font-medium transition-colors"
                     >
                         ← Voltar para Home
+                    </Link>
+
+                    <Link
+                        href="/servicos"
+                        className="inline-flex items-center gap-2 rounded-lg bg-[#159447] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#064E2D]"
+                    >
+                        Ver serviços e métricas detalhadas →
                     </Link>
                 </div>
 
@@ -47,6 +54,7 @@ export default function Home() {
 
 
                 <section
+                    id="historico"
                     className="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-2"
                     aria-label="Gráficos de impacto ambiental"
                 >

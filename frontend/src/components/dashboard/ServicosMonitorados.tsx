@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { ApiError, apiFetch } from "../../lib/api";
 
@@ -146,14 +147,23 @@ export default function ServicosMonitorados() {
 
   return (
     <section className="mt-8 rounded-xl border border-[#DCE8DF] bg-white p-6 shadow-sm">
-      <div className="mb-5">
-        <h2 className="text-lg font-semibold text-[#18343C]">
-          Serviços monitorados
-        </h2>
+      <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-semibold text-[#18343C]">
+            Serviços monitorados
+          </h2>
 
-        <p className="mt-1 text-sm text-[#52666A]">
-          Estado, localização e impacto ambiental por serviço
-        </p>
+          <p className="mt-1 text-sm text-[#52666A]">
+            Estado, localização e impacto ambiental por serviço
+          </p>
+        </div>
+
+        <Link
+          href="/servicos"
+          className="text-sm font-semibold text-[#159447] transition-colors hover:text-[#064E2D]"
+        >
+          Ver todos os serviços →
+        </Link>
       </div>
 
       {erro && (
@@ -174,7 +184,7 @@ export default function ServicosMonitorados() {
       )}
 
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[850px] text-left text-sm">
+        <table className="w-full min-w-[950px] text-left text-sm">
           <thead>
             <tr className="border-b border-[#DCE8DF] text-[#52666A]">
               <th className="px-4 py-3 font-medium">Serviço</th>
@@ -186,6 +196,7 @@ export default function ServicosMonitorados() {
               <th className="px-4 py-3 text-right font-medium">
                 CO₂e (g)
               </th>
+              <th className="px-4 py-3" />
             </tr>
           </thead>
 
@@ -193,7 +204,7 @@ export default function ServicosMonitorados() {
             {carregando && (
               <tr>
                 <td
-                  colSpan={5}
+                  colSpan={6}
                   className="px-4 py-8 text-center text-[#52666A]"
                 >
                   Carregando serviços...
@@ -243,6 +254,17 @@ export default function ServicosMonitorados() {
                         maximumFractionDigits: 3,
                       })}
                     </td>
+
+                    <td className="whitespace-nowrap px-4 py-4 text-right">
+                      <Link
+                        href={`/servicos?servicoId=${encodeURIComponent(
+                          servico.id,
+                        )}`}
+                        className="font-semibold text-[#159447] transition-colors hover:text-[#064E2D]"
+                      >
+                        Detalhes →
+                      </Link>
+                    </td>
                   </tr>
                 );
               })}
@@ -250,7 +272,7 @@ export default function ServicosMonitorados() {
             {!carregando && dados.length === 0 && (
               <tr>
                 <td
-                  colSpan={5}
+                  colSpan={6}
                   className="px-4 py-8 text-center text-[#52666A]"
                 >
                   Nenhum serviço encontrado.
