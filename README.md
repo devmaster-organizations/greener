@@ -6,6 +6,10 @@ O GreenER tem como objetivo monitorar serviços de software e estimar
 seu consumo energético e suas emissões de CO₂ equivalente (CO₂e)
 a partir de métricas operacionais.
 
+# Figma
+
+Link: https://www.figma.com/design/q8Zd81ZqRhZyYqby7jBFwK/Untitled?node-id=17-74&t=htUJCF3jCncI5bd5-1
+
 ## Funcionamento previsto
 
 1. O backend consulta o Agregador de Métricas para descobrir os serviços disponíveis.
