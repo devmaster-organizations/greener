@@ -49,7 +49,10 @@ export function paraColetaResponse(coleta: ColetaComServico): ColetaResponse {
   };
 }
 
-export function parseData(valor: string | undefined, campo: string): Date | undefined {
+export function parseData(
+  valor: string | undefined,
+  campo: string,
+): Date | undefined {
   if (valor === undefined || valor.trim() === '') {
     return undefined;
   }
@@ -58,8 +61,14 @@ export function parseData(valor: string | undefined, campo: string): Date | unde
 
   if (Number.isNaN(data.getTime())) {
     throw new BadRequestException(
-      `Parâmetro "${campo}" inválido: use uma data ISO 8601 (ex.: 2026-10-13T00:00:00Z)`,
+      `Parâmetro "${campo}" inválido: use uma data ISO 8601.`,
     );
+  }
+
+  // Quando receber somente uma data, inclui o dia inteiro
+  // no filtro final.
+  if (campo === 'ate' && /^\d{4}-\d{2}-\d{2}$/.test(valor)) {
+    data.setUTCHours(23, 59, 59, 999);
   }
 
   return data;
