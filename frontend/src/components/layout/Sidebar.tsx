@@ -1,5 +1,13 @@
 
-export default function Sidebar() {
+"use client";
+
+interface SidebarProps {
+  onComparacoesClick: () => void;
+}
+
+export default function Sidebar({
+  onComparacoesClick,
+}: SidebarProps) {
   return (
     <aside className="flex min-h-screen w-64 flex-col bg-[#064E2D] p-6 text-white">
       <div className="mb-10 flex items-center gap-3">
@@ -63,12 +71,13 @@ export default function Sidebar() {
           </li>
 
           <li>
-            <a
-              href="#comparacoes"
-              className="block rounded-lg px-4 py-3 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+            <button
+              type="button"
+              onClick={onComparacoesClick}
+              className="block w-full rounded-lg px-4 py-3 text-left text-white/80 transition-colors hover:bg-white/10 hover:text-white"
             >
               Comparações
-            </a>
+            </button>
           </li>
 
           <li>
@@ -79,7 +88,7 @@ export default function Sidebar() {
               Configurações
             </a>
           </li>
-          
+
           <li>
             <a
               href="/login"
@@ -88,7 +97,6 @@ export default function Sidebar() {
               Login
             </a>
           </li>
-
         </ul>
       </nav>
 

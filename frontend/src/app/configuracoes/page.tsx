@@ -15,7 +15,7 @@ export default function Configuracoes() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
+      <Sidebar onComparacoesClick={() => {}} />
 
       <main className="min-w-0 flex-1 p-8">
         <Header
