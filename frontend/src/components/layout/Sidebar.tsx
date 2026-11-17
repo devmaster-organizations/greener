@@ -1,4 +1,6 @@
 
+import Link from "next/link";
+
 export default function Sidebar() {
   return (
     <aside className="flex min-h-screen w-64 flex-col bg-[#064E2D] p-6 text-white">
@@ -35,13 +37,13 @@ export default function Sidebar() {
       <nav aria-label="Menu principal">
         <ul className="space-y-2">
           <li>
-            <a
+            <Link
               href="/"
               aria-current="page"
               className="block rounded-lg bg-[#159447] px-4 py-3 font-semibold text-white"
             >
               Dashboard
-            </a>
+            </Link>
           </li>
 
           <li>
