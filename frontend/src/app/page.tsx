@@ -8,7 +8,6 @@ import {
   Users,
   Globe
 } from 'lucide-react';
-import Link from 'next/link';
 
 export const LandingPage: React.FC = () => {
   return (
