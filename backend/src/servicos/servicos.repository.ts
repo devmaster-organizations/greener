@@ -43,8 +43,17 @@ export class ServicosRepository {
     });
   }
 
-  async listar(): Promise<Servico[]> {
-    return this.prisma.servico.findMany();
+  /**
+   * Lista serviços. Por padrão exclui os marcados como REMOVIDO.
+   * Informe `status` para filtrar por um estado específico (ex.: 'REMOVIDO').
+   */
+  async listar(filtros?: { status?: string }): Promise<Servico[]> {
+    return this.prisma.servico.findMany({
+      where: {
+        ...(filtros?.status ? { status: filtros.status } : { status: { not: StatusServico.Removido } }),
+      },
+      orderBy: { nome: 'asc' },
+    });
   }
 
   async buscarPorId(id: string): Promise<Servico | null> {

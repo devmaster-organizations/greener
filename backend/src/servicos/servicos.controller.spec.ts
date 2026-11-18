@@ -42,6 +42,7 @@ describe('ServicosController', () => {
     const resposta = await controller.listar();
 
     expect(repository.listar).toHaveBeenCalledTimes(1);
+    expect(repository.listar).toHaveBeenCalledWith({});
     expect(resposta).toEqual([
       {
         id: 'billing-api',
@@ -61,6 +62,26 @@ describe('ServicosController', () => {
     ]);
     expect(typeof resposta[0].latitude).toBe('number');
     expect(typeof resposta[0].longitude).toBe('number');
+  });
+
+  it('passa o filtro de status para o repositório quando informado', async () => {
+    const { controller, repository } = criarController({
+      listar: vi.fn().mockResolvedValue([]),
+    });
+
+    await controller.listar('REMOVIDO');
+
+    expect(repository.listar).toHaveBeenCalledWith({ status: 'REMOVIDO' });
+  });
+
+  it('não passa filtro quando o status não é informado', async () => {
+    const { controller, repository } = criarController({
+      listar: vi.fn().mockResolvedValue([]),
+    });
+
+    await controller.listar();
+
+    expect(repository.listar).toHaveBeenCalledWith({});
   });
 
   it('serializa latitude e longitude nulas como null', async () => {

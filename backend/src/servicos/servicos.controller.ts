@@ -1,4 +1,4 @@
-import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param, Query } from '@nestjs/common';
 import { paraNumero } from '../api/serializacao.js';
 import type { Servico } from '../generated/prisma/client.js';
 import { ServicosRepository } from './servicos.repository.js';
@@ -42,8 +42,8 @@ export class ServicosController {
   constructor(private readonly servicos: ServicosRepository) {}
 
   @Get()
-  async listar(): Promise<ServicoResponse[]> {
-    const servicos = await this.servicos.listar();
+  async listar(@Query('status') status?: string) {
+    const servicos = await this.servicos.listar({ status });
     return servicos.map(paraServicoResponse);
   }
 
