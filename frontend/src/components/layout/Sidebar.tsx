@@ -46,7 +46,7 @@ export default function Sidebar() {
 
           <li>
             <a
-              href="#servicos"
+              href="/servicos"
               className="block rounded-lg px-4 py-3 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
             >
               Serviços
