@@ -6,8 +6,10 @@ async function bootstrap() {
     instrument: ObserveInstrument,
   });
 
-  // O frontend (Next.js) roda em outra origem (http://localhost:3000).
-  app.enableCors();
+  // O frontend (Next.js) roda em outra origem (http://localhost:3002).
+  app.enableCors({
+    origin: process.env.FRONTEND_URL ?? 'http://localhost:3002',
+  });
 
   await app.listen(process.env.PORT ?? 3001);
 }

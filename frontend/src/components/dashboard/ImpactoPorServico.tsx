@@ -1,6 +1,5 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -10,79 +9,15 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { ApiError, apiFetch } from "../../lib/api";
-
-interface ImpactoServicoApi {
-  servicoId: string;
-  servicoNome: string;
-  energiaKwh: number;
-  co2eG: number;
-}
-
-interface ServicoImpacto {
-  servico: string;
-  co2e: number;
-}
-
-function mensagemDeErro(error: unknown): string {
-  return error instanceof ApiError
-    ? error.message
-    : "Não foi possível carregar o impacto por serviço.";
-}
+import { useDashboardData } from "./DashboardDataProvider";
 
 export default function ImpactoPorServico() {
-  const [dados, setDados] = useState<ServicoImpacto[]>([]);
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState<string | null>(null);
+  const { impactos, carregando, erro, recarregar } = useDashboardData();
 
-  const buscarImpactos = useCallback(async (): Promise<ServicoImpacto[]> => {
-    const impactos = await apiFetch<ImpactoServicoApi[]>(
-      "/dashboard/impacto-por-servico",
-    );
-
-    return impactos.map((impacto) => ({
-      servico: impacto.servicoNome,
-      co2e: impacto.co2eG,
-    }));
-  }, []);
-
-  useEffect(() => {
-    let ativo = true;
-
-    buscarImpactos()
-      .then((impactos) => {
-        if (ativo) {
-          setDados(impactos);
-        }
-      })
-      .catch((error: unknown) => {
-        if (ativo) {
-          setErro(mensagemDeErro(error));
-        }
-      })
-      .finally(() => {
-        if (ativo) {
-          setCarregando(false);
-        }
-      });
-
-    return () => {
-      ativo = false;
-    };
-  }, [buscarImpactos]);
-
-  const recarregar = async () => {
-    setCarregando(true);
-    setErro(null);
-
-    try {
-      setDados(await buscarImpactos());
-    } catch (error) {
-      setErro(mensagemDeErro(error));
-    } finally {
-      setCarregando(false);
-    }
-  };
+  const dados = impactos.map((impacto) => ({
+    servico: impacto.servicoNome,
+    co2e: impacto.co2eG,
+  }));
 
   return (
     <section className="rounded-xl border border-[#DCE8DF] bg-white p-6 shadow-sm">

@@ -6,6 +6,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { AuthService, type LoginResponse } from './auth.service.js';
+import { Public } from './public.decorator.js';
 
 export interface LoginRequest {
   email?: string;
@@ -16,6 +17,7 @@ export interface LoginRequest {
 export class AuthController {
   constructor(private readonly auth: AuthService) {}
 
+  @Public()
   @Post('login')
   @HttpCode(200)
   async login(@Body() body: LoginRequest): Promise<LoginResponse> {

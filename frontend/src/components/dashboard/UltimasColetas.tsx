@@ -1,16 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { ApiError, apiFetch } from "../../lib/api";
-
-interface ColetaApi {
-  id: string;
-  servicoNome: string;
-  coletadaAt: string;
-  energiaKwh: number | null;
-  co2eG: number | null;
-  status: string;
-}
+import { useDashboardData, type ColetaApi } from "./DashboardDataProvider";
 
 interface Coleta {
   id: string;
@@ -81,60 +71,10 @@ function combinarDados(coletas: ColetaApi[]): Coleta[] {
   }));
 }
 
-function mensagemDeErro(error: unknown): string {
-  return error instanceof ApiError
-    ? error.message
-    : "Não foi possível carregar as coletas recentes.";
-}
-
 export default function UltimasColetas() {
-  const [dados, setDados] = useState<Coleta[]>([]);
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState<string | null>(null);
+  const { coletas, carregando, erro, recarregar } = useDashboardData();
 
-  const buscarColetas = useCallback(async (): Promise<Coleta[]> => {
-    const coletas = await apiFetch<ColetaApi[]>("/coletas?limit=10");
-
-    return combinarDados(coletas);
-  }, []);
-
-  useEffect(() => {
-    let ativo = true;
-
-    buscarColetas()
-      .then((coletas) => {
-        if (ativo) {
-          setDados(coletas);
-        }
-      })
-      .catch((error: unknown) => {
-        if (ativo) {
-          setErro(mensagemDeErro(error));
-        }
-      })
-      .finally(() => {
-        if (ativo) {
-          setCarregando(false);
-        }
-      });
-
-    return () => {
-      ativo = false;
-    };
-  }, [buscarColetas]);
-
-  const recarregar = async () => {
-    setCarregando(true);
-    setErro(null);
-
-    try {
-      setDados(await buscarColetas());
-    } catch (error) {
-      setErro(mensagemDeErro(error));
-    } finally {
-      setCarregando(false);
-    }
-  };
+  const dados = combinarDados(coletas);
 
   return (
     <section className="mt-8 rounded-xl border border-[#DCE8DF] bg-white p-6 shadow-sm">
