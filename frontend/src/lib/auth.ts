@@ -1,5 +1,10 @@
 import { apiFetch } from './api';
-import { AUTH_COOKIE, AUTH_COOKIE_MAX_AGE } from './auth-constants';
+import {
+  AUTH_COOKIE,
+  AUTH_COOKIE_MAX_AGE,
+  TOKEN_KEY,
+  USUARIO_KEY,
+} from './auth-constants';
 
 export interface UsuarioAutenticado {
   id: string;
@@ -12,8 +17,15 @@ export interface LoginResponse {
   usuario: UsuarioAutenticado;
 }
 
-const TOKEN_KEY = 'greener_token';
-const USUARIO_KEY = 'greener_usuario';
+function sufixoSeguro(): string {
+  return typeof window !== 'undefined' && window.location.protocol === 'https:'
+    ? '; secure'
+    : '';
+}
+
+function opcoesCookie(): string {
+  return `path=/; max-age=${AUTH_COOKIE_MAX_AGE}; samesite=lax${sufixoSeguro()}`;
+}
 
 export async function login(
   email: string,
@@ -26,7 +38,7 @@ export async function login(
 
   localStorage.setItem(TOKEN_KEY, resposta.access_token);
   localStorage.setItem(USUARIO_KEY, JSON.stringify(resposta.usuario));
-  document.cookie = `${AUTH_COOKIE}=${encodeURIComponent(resposta.access_token)}; path=/; max-age=${AUTH_COOKIE_MAX_AGE}; samesite=lax`;
+  document.cookie = `${AUTH_COOKIE}=${encodeURIComponent(resposta.access_token)}; ${opcoesCookie()}`;
 
   return resposta;
 }
@@ -52,5 +64,6 @@ export function getUsuario(): UsuarioAutenticado | null {
 export function logout(): void {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USUARIO_KEY);
-  document.cookie = `${AUTH_COOKIE}=; path=/; max-age=0; samesite=lax`;
+
+  document.cookie = `${AUTH_COOKIE}=; path=/; max-age=0; samesite=lax${sufixoSeguro()}`;
 }

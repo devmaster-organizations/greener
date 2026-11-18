@@ -1,6 +1,5 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import {
   CartesianGrid,
   Line,
@@ -10,18 +9,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { ApiError, apiFetch } from "../../lib/api";
-
-interface HistoricoApi {
-  dia: string;
-  energiaKwh: number;
-  co2eG: number;
-}
-
-interface PontoHistorico {
-  data: string;
-  co2e: number;
-}
+import { useDashboardData } from "./DashboardDataProvider";
 
 function formatarDia(dia: string): string {
   const partes = dia.slice(0, 10).split("-");
@@ -33,63 +21,13 @@ function formatarDia(dia: string): string {
   return `${partes[2]}/${partes[1]}`;
 }
 
-function mensagemDeErro(error: unknown): string {
-  return error instanceof ApiError
-    ? error.message
-    : "Não foi possível carregar o histórico de impacto.";
-}
-
 export default function HistoricoImpacto() {
-  const [dados, setDados] = useState<PontoHistorico[]>([]);
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState<string | null>(null);
+  const { historico, carregando, erro, recarregar } = useDashboardData();
 
-  const buscarHistorico = useCallback(async (): Promise<PontoHistorico[]> => {
-    const historico = await apiFetch<HistoricoApi[]>("/dashboard/historico");
-
-    return historico.map((item) => ({
-      data: formatarDia(item.dia),
-      co2e: item.co2eG,
-    }));
-  }, []);
-
-  useEffect(() => {
-    let ativo = true;
-
-    buscarHistorico()
-      .then((historico) => {
-        if (ativo) {
-          setDados(historico);
-        }
-      })
-      .catch((error: unknown) => {
-        if (ativo) {
-          setErro(mensagemDeErro(error));
-        }
-      })
-      .finally(() => {
-        if (ativo) {
-          setCarregando(false);
-        }
-      });
-
-    return () => {
-      ativo = false;
-    };
-  }, [buscarHistorico]);
-
-  const recarregar = async () => {
-    setCarregando(true);
-    setErro(null);
-
-    try {
-      setDados(await buscarHistorico());
-    } catch (error) {
-      setErro(mensagemDeErro(error));
-    } finally {
-      setCarregando(false);
-    }
-  };
+  const dados = historico.map((item) => ({
+    data: formatarDia(item.dia),
+    co2e: item.co2eG,
+  }));
 
   return (
     <section className="rounded-xl border border-[#DCE8DF] bg-white p-6 shadow-sm">

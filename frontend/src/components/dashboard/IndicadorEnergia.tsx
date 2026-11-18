@@ -1,12 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { ApiError, apiFetch } from "../../lib/api";
+import { useDashboardData } from "./DashboardDataProvider";
 import IndicadorCard from "./IndicadorCard";
-
-interface IndicadoresApi {
-  energiaTotalKwh: number;
-}
 
 function formatarEnergia(valor: number): string {
   return `${valor.toLocaleString("pt-BR", {
@@ -15,43 +10,9 @@ function formatarEnergia(valor: number): string {
   })} kWh`;
 }
 
-function mensagemDeErro(error: unknown): string {
-  return error instanceof ApiError
-    ? error.message
-    : "Não foi possível carregar a energia estimada.";
-}
-
 export default function IndicadorEnergia() {
-  const [energia, setEnergia] = useState<number | null>(null);
-  const [erro, setErro] = useState<string | null>(null);
-
-  const buscarEnergia = useCallback(async (): Promise<number> => {
-    const indicadores = await apiFetch<IndicadoresApi>(
-      "/dashboard/indicadores",
-    );
-
-    return indicadores.energiaTotalKwh;
-  }, []);
-
-  useEffect(() => {
-    let ativo = true;
-
-    buscarEnergia()
-      .then((valor) => {
-        if (ativo) {
-          setEnergia(valor);
-        }
-      })
-      .catch((error: unknown) => {
-        if (ativo) {
-          setErro(mensagemDeErro(error));
-        }
-      });
-
-    return () => {
-      ativo = false;
-    };
-  }, [buscarEnergia]);
+  const { indicadores, carregando, erro } = useDashboardData();
+  const energia = indicadores?.energiaTotalKwh ?? null;
 
   return (
     <IndicadorCard
@@ -59,7 +20,7 @@ export default function IndicadorEnergia() {
       valor={energia === null ? "—" : formatarEnergia(energia)}
       descricao={
         erro ??
-        (energia === null
+        (carregando || energia === null
           ? "Carregando..."
           : "Consumo acumulado no período")
       }

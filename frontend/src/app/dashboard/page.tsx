@@ -1,5 +1,6 @@
 import Sidebar from "../../components/layout/Sidebar";
 import Header from "../../components/layout/Header";
+import { DashboardDataProvider } from "../../components/dashboard/DashboardDataProvider";
 
 import IndicadorEnergia from "../../components/dashboard/IndicadorEnergia";
 import IndicadorEmissoes from "../../components/dashboard/IndicadorEmissoes";
@@ -16,7 +17,7 @@ import Link from "next/link";
 
 export default function Home() {
     return (
-
+        <DashboardDataProvider>
         <div className="flex min-h-screen bg-gray-50">
             <Sidebar />
 
@@ -69,5 +70,6 @@ export default function Home() {
             </main>
 
         </div>
+        </DashboardDataProvider>
     );
 }

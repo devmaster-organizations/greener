@@ -1,19 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { ApiError, apiFetch } from "../../lib/api";
+import { useDashboardData, type ServicoApi } from "./DashboardDataProvider";
 import type { ServicoMapa } from "./mapa-servicos.types";
-
-interface ServicoApi {
-  id: string;
-  nome: string;
-  status: string;
-  cidade: string | null;
-  regiao: string | null;
-  latitude: number | null;
-  longitude: number | null;
-}
 
 const ROTULO_STATUS: Record<string, string> = {
   ATIVO: "Online",
@@ -55,60 +44,10 @@ function combinarDados(servicos: ServicoApi[]): ServicoMapa[] {
     });
 }
 
-function mensagemDeErro(error: unknown): string {
-  return error instanceof ApiError
-    ? error.message
-    : "Não foi possível carregar o mapa de serviços.";
-}
-
 export default function MapaServicos() {
-  const [dados, setDados] = useState<ServicoMapa[]>([]);
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState<string | null>(null);
+  const { servicos, carregando, erro, recarregar } = useDashboardData();
 
-  const buscarServicos = useCallback(async (): Promise<ServicoMapa[]> => {
-    const servicos = await apiFetch<ServicoApi[]>("/servicos");
-
-    return combinarDados(servicos);
-  }, []);
-
-  useEffect(() => {
-    let ativo = true;
-
-    buscarServicos()
-      .then((servicos) => {
-        if (ativo) {
-          setDados(servicos);
-        }
-      })
-      .catch((error: unknown) => {
-        if (ativo) {
-          setErro(mensagemDeErro(error));
-        }
-      })
-      .finally(() => {
-        if (ativo) {
-          setCarregando(false);
-        }
-      });
-
-    return () => {
-      ativo = false;
-    };
-  }, [buscarServicos]);
-
-  const recarregar = async () => {
-    setCarregando(true);
-    setErro(null);
-
-    try {
-      setDados(await buscarServicos());
-    } catch (error) {
-      setErro(mensagemDeErro(error));
-    } finally {
-      setCarregando(false);
-    }
-  };
+  const dados = combinarDados(servicos);
 
   return (
     <section className="rounded-xl border border-[#DCE8DF] bg-white p-6 shadow-sm">

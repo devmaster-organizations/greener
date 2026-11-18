@@ -1,22 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { ApiError, apiFetch } from "../../lib/api";
-
-interface ServicoApi {
-  id: string;
-  nome: string;
-  status: string;
-  pais: string | null;
-  regiao: string | null;
-  cidade: string | null;
-}
-
-interface ImpactoServicoApi {
-  servicoId: string;
-  energiaKwh: number;
-  co2eG: number;
-}
+import {
+  useDashboardData,
+  type ImpactoServicoApi,
+  type ServicoApi,
+} from "./DashboardDataProvider";
 
 interface Servico {
   id: string;
@@ -86,63 +74,11 @@ function combinarDados(
     });
 }
 
-function mensagemDeErro(error: unknown): string {
-  return error instanceof ApiError
-    ? error.message
-    : "Não foi possível carregar os serviços monitorados.";
-}
-
 export default function ServicosMonitorados() {
-  const [dados, setDados] = useState<Servico[]>([]);
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState<string | null>(null);
+  const { servicos, impactos, carregando, erro, recarregar } =
+    useDashboardData();
 
-  const buscarServicos = useCallback(async (): Promise<Servico[]> => {
-    const [servicos, impactos] = await Promise.all([
-      apiFetch<ServicoApi[]>("/servicos"),
-      apiFetch<ImpactoServicoApi[]>("/dashboard/impacto-por-servico"),
-    ]);
-
-    return combinarDados(servicos, impactos);
-  }, []);
-
-  useEffect(() => {
-    let ativo = true;
-
-    buscarServicos()
-      .then((servicos) => {
-        if (ativo) {
-          setDados(servicos);
-        }
-      })
-      .catch((error: unknown) => {
-        if (ativo) {
-          setErro(mensagemDeErro(error));
-        }
-      })
-      .finally(() => {
-        if (ativo) {
-          setCarregando(false);
-        }
-      });
-
-    return () => {
-      ativo = false;
-    };
-  }, [buscarServicos]);
-
-  const recarregar = async () => {
-    setCarregando(true);
-    setErro(null);
-
-    try {
-      setDados(await buscarServicos());
-    } catch (error) {
-      setErro(mensagemDeErro(error));
-    } finally {
-      setCarregando(false);
-    }
-  };
+  const dados = combinarDados(servicos, impactos);
 
   return (
     <section

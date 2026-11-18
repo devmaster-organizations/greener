@@ -29,6 +29,7 @@ services:
       DATABASE_URL: postgresql://greener:greener_dev@postgres:5432/greener?schema=public
       JWT_SECRET: ${JWT_SECRET:-greener-dev-secret}
       JWT_EXPIRES_IN_SECONDS: ${JWT_EXPIRES_IN_SECONDS:-86400}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3002}
     depends_on:
       postgres:
         condition: service_healthy
@@ -74,7 +75,7 @@ services:
       args:
         NEXT_PUBLIC_API_URL: http://localhost:3001
     ports:
-      - "3000:3000"
+      - "3002:3002"
     depends_on:
       - backend
 
