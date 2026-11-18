@@ -36,7 +36,7 @@ export default function Sidebar() {
         <ul className="space-y-2">
           <li>
             <a
-              href="/"
+              href="/dashboard"
               aria-current="page"
               className="block rounded-lg bg-[#159447] px-4 py-3 font-semibold text-white"
             >
@@ -64,7 +64,7 @@ export default function Sidebar() {
 
           <li>
             <a
-              href="#comparacoes"
+              href="/comparacoes"
               className="block rounded-lg px-4 py-3 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
             >
               Comparações
