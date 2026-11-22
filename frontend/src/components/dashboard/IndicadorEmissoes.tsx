@@ -1,5 +1,7 @@
+
 "use client";
 
+import { Leaf } from "lucide-react";
 import { useDashboardData } from "./DashboardDataProvider";
 import IndicadorCard from "./IndicadorCard";
 
@@ -26,6 +28,8 @@ export default function IndicadorEmissoes() {
           ? "Carregando..."
           : "Emissões estimadas de carbono")
       }
+      corDestaque="border-t-green-500"
+      icone={<Leaf size={23} className="text-green-600" />}
     />
   );
 }

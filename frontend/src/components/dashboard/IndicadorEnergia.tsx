@@ -1,5 +1,7 @@
+
 "use client";
 
+import { Zap } from "lucide-react";
 import { useDashboardData } from "./DashboardDataProvider";
 import IndicadorCard from "./IndicadorCard";
 
@@ -24,6 +26,8 @@ export default function IndicadorEnergia() {
           ? "Carregando..."
           : "Consumo acumulado no período")
       }
+      corDestaque="border-t-amber-400"
+      icone={<Zap size={23} className="text-amber-500" />}
     />
   );
 }
