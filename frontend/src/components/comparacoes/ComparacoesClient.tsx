@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
@@ -26,7 +25,6 @@ import {
   AlertCircle,
   RefreshCw,
   Check,
-  X,
   TrendingUp,
   Activity,
 } from 'lucide-react';
@@ -44,7 +42,6 @@ type ImpactoApi = {
   co2eG: number;
 };
 
-const VERDE = '#159447';
 const CORES = ['#159447', '#72C879', '#347A55', '#8BBE9A', '#18343C'];
 
 const formatarNumero = (valor: number) =>
@@ -54,6 +51,22 @@ const formatarNumero = (valor: number) =>
 
 const formatarPercentual = (valor: number) =>
   `${formatarNumero(valor)}%`;
+
+function useLarguraTela() {
+  const [largura, setLargura] = useState(1024);
+
+  useEffect(() => {
+    function atualizarLargura() {
+      setLargura(window.innerWidth);
+    }
+
+    atualizarLargura();
+    window.addEventListener('resize', atualizarLargura);
+    return () => window.removeEventListener('resize', atualizarLargura);
+  }, []);
+
+  return largura;
+}
 
 function CartaoIndicador({
   titulo,
@@ -73,25 +86,25 @@ function CartaoIndicador({
   const Icone = tipo === 'energia' ? Zap : Leaf;
 
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-[#DCE8DF] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+    <article className="group relative overflow-hidden rounded-2xl border border-[#DCE8DF] bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg sm:p-6">
       <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[#EAF5EC] transition-transform duration-500 group-hover:scale-125" />
 
       <div className="relative">
-        <div className="mb-5 flex items-center justify-between">
+        <div className="mb-4 flex items-center justify-between gap-2 sm:mb-5">
           <span className="text-sm font-medium text-[#52666A]">
             {titulo}
           </span>
 
-          <div className="rounded-xl bg-[#EAF5EC] p-3">
+          <div className="shrink-0 rounded-xl bg-[#EAF5EC] p-2.5 sm:p-3">
             <Icone className="h-5 w-5 text-[#159447]" />
           </div>
         </div>
 
-        <p className="text-xl font-bold text-[#18343C]">
+        <p className="break-words text-lg font-bold text-[#18343C] sm:text-xl">
           {nome}
         </p>
 
-        <p className="mt-3 text-3xl font-bold tracking-tight text-[#159447]">
+        <p className="mt-2.5 text-2xl font-bold tracking-tight text-[#159447] sm:mt-3 sm:text-3xl">
           {formatarNumero(valor)}
           <span className="ml-2 text-sm font-medium text-[#52666A]">
             {unidade}
@@ -99,9 +112,9 @@ function CartaoIndicador({
         </p>
 
         {diferenca !== null && (
-          <div className="mt-5 flex items-center gap-2 border-t border-[#DCE8DF] pt-4 text-xs text-[#52666A]">
-            <TrendingUp className="h-4 w-4 text-[#159447]" />
-            Diferença entre maior e menor:
+          <div className="mt-4 flex flex-wrap items-center gap-1.5 border-t border-[#DCE8DF] pt-3.5 text-xs text-[#52666A] sm:mt-5 sm:gap-2 sm:pt-4">
+            <TrendingUp className="h-4 w-4 shrink-0 text-[#159447]" />
+            <span>Diferença entre maior e menor:</span>
             <strong className="text-[#159447]">
               {formatarPercentual(diferenca)}
             </strong>
@@ -126,11 +139,11 @@ function TooltipPersonalizado({
   const item = payload[0].payload;
 
   return (
-    <div className="rounded-xl border border-[#DCE8DF] bg-white p-4 shadow-xl">
-      <p className="text-sm font-semibold text-[#18343C]">
+    <div className="max-w-[240px] rounded-xl border border-[#DCE8DF] bg-white p-3.5 shadow-xl sm:p-4">
+      <p className="break-words text-sm font-semibold text-[#18343C]">
         {item.servico}
       </p>
-      <p className="mt-1 text-lg font-bold text-[#159447]">
+      <p className="mt-1 text-base font-bold text-[#159447] sm:text-lg">
         {formatarNumero(item.valor)} {unidade}
       </p>
     </div>
@@ -153,13 +166,18 @@ function SeletorTipoGrafico({
   ];
 
   return (
-    <div className="flex flex-wrap gap-1 rounded-xl border border-[#DCE8DF] bg-[#F7FAF7] p-1">
+    <div
+      role="group"
+      aria-label="Tipo de visualização do gráfico"
+      className="flex w-full flex-wrap gap-1 rounded-xl border border-[#DCE8DF] bg-[#F7FAF7] p-1 sm:w-auto"
+    >
       {opcoes.map((opcao) => (
         <button
           key={opcao.valor}
           type="button"
           onClick={() => onChange(opcao.valor)}
-          className={`rounded-lg px-3 py-2 text-xs font-semibold transition-all duration-200 ${
+          aria-pressed={tipo === opcao.valor}
+          className={`flex-1 rounded-lg px-3 py-2 text-xs font-semibold transition-all duration-200 sm:flex-initial ${
             tipo === opcao.valor
               ? 'bg-[#159447] text-white shadow-sm'
               : 'text-[#52666A] hover:bg-[#EAF5EC] hover:text-[#159447]'
@@ -172,7 +190,6 @@ function SeletorTipoGrafico({
   );
 }
 
-
 function GraficoComparativo({
   dados,
   unidade,
@@ -183,6 +200,8 @@ function GraficoComparativo({
   tipo: TipoGrafico;
 }) {
   const [indiceAtivo, setIndiceAtivo] = useState<number | null>(null);
+  const larguraTela = useLarguraTela();
+  const isMobile = larguraTela < 640;
 
   if (dados.length === 0) {
     return (
@@ -203,9 +222,9 @@ function GraficoComparativo({
             dataKey="valor"
             nameKey="servico"
             cx="50%"
-            cy="45%"
-            innerRadius="52%"
-            outerRadius="72%"
+            cy="43%"
+            innerRadius={isMobile ? '48%' : '52%'}
+            outerRadius={isMobile ? '68%' : '72%'}
             paddingAngle={3}
             cornerRadius={6}
             animationDuration={1100}
@@ -242,17 +261,17 @@ function GraficoComparativo({
             iconType="circle"
             wrapperStyle={{
               fontSize: '11px',
-              paddingTop: '12px',
+              paddingTop: '10px',
             }}
           />
 
           <text
             x="50%"
-            y="43%"
+            y="41%"
             textAnchor="middle"
             dominantBaseline="middle"
             fill="#18343C"
-            fontSize="20"
+            fontSize={isMobile ? '16' : '20'}
             fontWeight="bold"
           >
             {formatarNumero(total)}
@@ -260,7 +279,7 @@ function GraficoComparativo({
 
           <text
             x="50%"
-            y="50%"
+            y="48%"
             textAnchor="middle"
             dominantBaseline="middle"
             fill="#52666A"
@@ -273,84 +292,92 @@ function GraficoComparativo({
     );
   }
 
-
-if (tipo === 'area') {
-  return (
-    <ResponsiveContainer width="100%" height="100%">
-      <AreaChart
-        data={dados}
-        margin={{ top: 20, right: 25, left: 10, bottom: 55 }}
-      >
-        <defs>
-          <linearGradient id="gradienteArea" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#159447" stopOpacity={0.45} />
-            <stop offset="95%" stopColor="#72C879" stopOpacity={0.03} />
-          </linearGradient>
-        </defs>
-
-        <CartesianGrid
-          stroke="#E8EFE9"
-          strokeDasharray="4 4"
-          vertical={false}
-        />
-
-        <XAxis
-          dataKey="servico"
-          angle={-25}
-          textAnchor="end"
-          interval={0}
-          height={75}
-          tick={{ fill: '#52666A', fontSize: 10 }}
-          axisLine={false}
-          tickLine={false}
-        />
-
-        <YAxis
-          tick={{ fill: '#52666A', fontSize: 11 }}
-          axisLine={false}
-          tickLine={false}
-        />
-
-        <Tooltip
-          content={<TooltipPersonalizado unidade={unidade} />}
-          cursor={{ stroke: '#159447', strokeDasharray: '4 4' }}
-        />
-
-        <Area
-          type="linear"
-          dataKey="valor"
-          name="Valor"
-          stroke="#159447"
-          strokeWidth={3}
-          fill="url(#gradienteArea)"
-          fillOpacity={1}
-          dot={{
-            r: 5,
-            fill: '#159447',
-            stroke: '#FFFFFF',
-            strokeWidth: 2,
+  if (tipo === 'area') {
+    return (
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart
+          data={dados}
+          margin={{
+            top: 20,
+            right: isMobile ? 12 : 25,
+            left: isMobile ? -10 : 10,
+            bottom: isMobile ? 65 : 55,
           }}
-          activeDot={{
-            r: 8,
-            fill: '#064E2D',
-            stroke: '#FFFFFF',
-            strokeWidth: 3,
-          }}
-          animationDuration={1100}
-          animationEasing="ease-out"
-        />
-      </AreaChart>
-    </ResponsiveContainer>
-  );
-}
+        >
+          <defs>
+            <linearGradient id="gradienteArea" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#159447" stopOpacity={0.45} />
+              <stop offset="95%" stopColor="#72C879" stopOpacity={0.03} />
+            </linearGradient>
+          </defs>
 
+          <CartesianGrid
+            stroke="#E8EFE9"
+            strokeDasharray="4 4"
+            vertical={false}
+          />
+
+          <XAxis
+            dataKey="servico"
+            angle={isMobile ? -35 : -25}
+            textAnchor="end"
+            interval={dados.length > 6 && isMobile ? 'preserveStartEnd' : 0}
+            height={isMobile ? 80 : 75}
+            tick={{ fill: '#52666A', fontSize: 10 }}
+            axisLine={false}
+            tickLine={false}
+          />
+
+          <YAxis
+            tick={{ fill: '#52666A', fontSize: 11 }}
+            axisLine={false}
+            tickLine={false}
+          />
+
+          <Tooltip
+            content={<TooltipPersonalizado unidade={unidade} />}
+            cursor={{ stroke: '#159447', strokeDasharray: '4 4' }}
+          />
+
+          <Area
+            type="linear"
+            dataKey="valor"
+            name="Valor"
+            stroke="#159447"
+            strokeWidth={3}
+            fill="url(#gradienteArea)"
+            fillOpacity={1}
+            dot={{
+              r: isMobile ? 4 : 5,
+              fill: '#159447',
+              stroke: '#FFFFFF',
+              strokeWidth: 2,
+            }}
+            activeDot={{
+              r: isMobile ? 6 : 8,
+              fill: '#064E2D',
+              stroke: '#FFFFFF',
+              strokeWidth: 3,
+            }}
+            animationDuration={1100}
+            animationEasing="ease-out"
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    );
+  }
 
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart
         data={dados}
         layout="vertical"
-        margin={{ top: 5, right: 30, left: 15, bottom: 5 }}
+        margin={{
+          top: 5,
+          right: isMobile ? 16 : 30,
+          left: isMobile ? 4 : 15,
+          bottom: 5,
+        }}
       >
         <CartesianGrid
           stroke="#E8EFE9"
@@ -368,8 +395,8 @@ if (tipo === 'area') {
         <YAxis
           type="category"
           dataKey="servico"
-          width={125}
-          tick={{ fill: '#18343C', fontSize: 11 }}
+          width={isMobile ? 92 : 130}
+          tick={{ fill: '#18343C', fontSize: isMobile ? 10 : 11 }}
           axisLine={false}
           tickLine={false}
         />
@@ -398,7 +425,6 @@ if (tipo === 'area') {
   );
 }
 
-
 export default function ComparacoesClient() {
   const [servicos, setServicos] = useState<ServicoApi[]>([]);
   const [impactos, setImpactos] = useState<ImpactoApi[]>([]);
@@ -409,10 +435,10 @@ export default function ComparacoesClient() {
   const [erro, setErro] = useState('');
 
   const [tipoGraficoEnergia, setTipoGraficoEnergia] =
-  useState<TipoGrafico>('barras');
+    useState<TipoGrafico>('barras');
 
   const [tipoGraficoEmissoes, setTipoGraficoEmissoes] =
-  useState<TipoGrafico>('barras');
+    useState<TipoGrafico>('barras');
 
   useEffect(() => {
     let ativo = true;
@@ -570,24 +596,21 @@ export default function ComparacoesClient() {
     0,
   );
 
-  const todosSelecionados =
-    servicos.length > 0 && selecionados.length === servicos.length;
-
   return (
-    <div className="space-y-7">
+    <div className="space-y-5 sm:space-y-7">
       {/* Cabeçalho da análise */}
-      <section className="relative overflow-hidden rounded-2xl bg-[#064E2D] p-7 text-white shadow-lg">
+      <section className="relative overflow-hidden rounded-2xl bg-[#064E2D] p-5 text-white shadow-lg sm:p-7">
         <div className="absolute -right-12 -top-16 h-64 w-64 rounded-full bg-white/5" />
-        <div className="absolute -bottom-24 right-40 h-56 w-56 rounded-full bg-[#159447]/30" />
+        <div className="absolute -bottom-24 right-10 h-56 w-56 rounded-full bg-[#159447]/30 sm:right-40" />
 
-        <div className="relative flex flex-col justify-between gap-5 md:flex-row md:items-center">
-          <div>
-            <div className="mb-3 flex items-center gap-2 text-sm text-green-100">
-              <Activity className="h-4 w-4" />
+        <div className="relative flex flex-col justify-between gap-4 md:flex-row md:items-center md:gap-5">
+          <div className="min-w-0">
+            <div className="mb-2.5 flex items-center gap-2 text-xs text-green-100 sm:mb-3 sm:text-sm">
+              <Activity className="h-4 w-4 shrink-0" />
               Análise ambiental
             </div>
 
-            <h2 className="text-2xl font-bold md:text-3xl">
+            <h2 className="text-xl font-bold sm:text-2xl md:text-3xl">
               Comparação de serviços
             </h2>
 
@@ -597,9 +620,9 @@ export default function ComparacoesClient() {
             </p>
           </div>
 
-          <div className="rounded-xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
+          <div className="self-start rounded-xl border border-white/20 bg-white/10 px-4 py-3.5 backdrop-blur-sm sm:p-4 md:self-auto">
             <p className="text-xs text-green-100">Serviços selecionados</p>
-            <p className="mt-1 text-3xl font-bold">
+            <p className="mt-1 text-2xl font-bold sm:text-3xl">
               {selecionados.length}
               <span className="ml-2 text-sm font-normal text-green-100">
                 / {servicos.length}
@@ -610,9 +633,9 @@ export default function ComparacoesClient() {
       </section>
 
       {/* Filtros */}
-      <section className="rounded-2xl border border-[#DCE8DF] bg-white p-6 shadow-sm">
-        <div className="mb-5 flex items-center gap-3">
-          <div className="rounded-xl bg-[#EAF5EC] p-2.5">
+      <section className="rounded-2xl border border-[#DCE8DF] bg-white p-4 shadow-sm sm:p-6">
+        <div className="mb-4 flex items-center gap-3 sm:mb-5">
+          <div className="shrink-0 rounded-xl bg-[#EAF5EC] p-2.5">
             <CalendarDays className="h-5 w-5 text-[#159447]" />
           </div>
           <div>
@@ -632,7 +655,7 @@ export default function ComparacoesClient() {
               type="date"
               value={dataInicial}
               onChange={(event) => setDataInicial(event.target.value)}
-              className="mt-2 w-full rounded-xl border border-[#DCE8DF] bg-[#F7FAF7] p-3 text-[#18343C] outline-none transition focus:border-[#159447] focus:ring-2 focus:ring-[#159447]/10"
+              className="mt-2 w-full rounded-xl border border-[#DCE8DF] bg-[#F7FAF7] p-3 text-sm text-[#18343C] outline-none transition focus:border-[#159447] focus:ring-2 focus:ring-[#159447]/10"
             />
           </label>
 
@@ -642,17 +665,17 @@ export default function ComparacoesClient() {
               type="date"
               value={dataFinal}
               onChange={(event) => setDataFinal(event.target.value)}
-              className="mt-2 w-full rounded-xl border border-[#DCE8DF] bg-[#F7FAF7] p-3 text-[#18343C] outline-none transition focus:border-[#159447] focus:ring-2 focus:ring-[#159447]/10"
+              className="mt-2 w-full rounded-xl border border-[#DCE8DF] bg-[#F7FAF7] p-3 text-sm text-[#18343C] outline-none transition focus:border-[#159447] focus:ring-2 focus:ring-[#159447]/10"
             />
           </label>
         </div>
       </section>
 
       {/* Seleção de serviços */}
-      <section className="rounded-2xl border border-[#DCE8DF] bg-white p-6 shadow-sm">
-        <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+      <section className="rounded-2xl border border-[#DCE8DF] bg-white p-4 shadow-sm sm:p-6">
+        <div className="mb-4 flex flex-col justify-between gap-3 sm:mb-5 sm:flex-row sm:items-center">
           <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-[#EAF5EC] p-2.5">
+            <div className="shrink-0 rounded-xl bg-[#EAF5EC] p-2.5">
               <BarChart3 className="h-5 w-5 text-[#159447]" />
             </div>
             <div>
@@ -665,7 +688,7 @@ export default function ComparacoesClient() {
             </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() =>
@@ -698,7 +721,7 @@ export default function ComparacoesClient() {
               return (
                 <label
                   key={servico.id}
-                  className={`group flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-all duration-200 hover:-translate-y-0.5 ${
+                  className={`group flex cursor-pointer items-center gap-3 rounded-xl border p-3.5 transition-all duration-200 hover:-translate-y-0.5 sm:p-4 ${
                     selecionado
                       ? 'border-[#159447] bg-[#EAF5EC] shadow-sm'
                       : 'border-[#DCE8DF] bg-white hover:border-[#A3BFA8] hover:bg-[#F7FAF7]'
@@ -727,12 +750,14 @@ export default function ComparacoesClient() {
                     )}
                   </div>
 
-                  <span className="min-w-0 flex-1 text-sm font-semibold text-[#18343C]">
+                  <span className="min-w-0 flex-1 break-words text-sm font-semibold text-[#18343C]">
                     {servico.nome}
                   </span>
 
                   {selecionado && (
-                    <span className="h-2 w-2 rounded-full bg-[#159447]" />
+                    <span className="shrink-0 rounded-full bg-[#159447]/15 px-2 py-0.5 text-[11px] font-medium text-[#159447]">
+                      Ativo
+                    </span>
                   )}
                 </label>
               );
@@ -741,25 +766,30 @@ export default function ComparacoesClient() {
         )}
 
         <div className="mt-4 flex items-center gap-2 border-t border-[#DCE8DF] pt-4 text-xs text-[#52666A]">
-          <Activity className="h-4 w-4 text-[#159447]" />
-          Selecione pelo menos dois serviços para comparar os resultados.
+          <Activity className="h-4 w-4 shrink-0 text-[#159447]" />
+          <span>
+            Selecione pelo menos dois serviços para comparar os resultados.
+          </span>
         </div>
       </section>
 
       {erro && (
-        <div className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        <div
+          role="alert"
+          className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+        >
           <AlertCircle className="h-5 w-5 shrink-0" />
-          {erro}
+          <span>{erro}</span>
         </div>
       )}
 
       {carregando ? (
-        <div className="flex items-center justify-center gap-3 rounded-2xl border border-[#DCE8DF] bg-white p-14 text-[#52666A]">
+        <div className="flex items-center justify-center gap-3 rounded-2xl border border-[#DCE8DF] bg-white p-10 text-sm text-[#52666A] sm:p-14">
           <RefreshCw className="h-5 w-5 animate-spin text-[#159447]" />
-          Carregando dados da comparação...
+          <span>Carregando dados da comparação...</span>
         </div>
       ) : !erro && selecionados.length < 2 ? (
-        <div className="rounded-2xl border border-[#DCE8DF] bg-white p-12 text-center shadow-sm">
+        <div className="rounded-2xl border border-[#DCE8DF] bg-white p-8 text-center shadow-sm sm:p-12">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EAF5EC]">
             <BarChart3 className="h-7 w-7 text-[#159447]" />
           </div>
@@ -771,7 +801,7 @@ export default function ComparacoesClient() {
           </p>
         </div>
       ) : !erro && dadosSelecionados.length === 0 ? (
-        <div className="rounded-2xl border border-[#DCE8DF] bg-white p-10 text-center text-sm text-[#52666A]">
+        <div className="rounded-2xl border border-[#DCE8DF] bg-white p-8 text-center text-sm text-[#52666A] sm:p-10">
           Não existem dados de impacto para os serviços selecionados neste período.
         </div>
       ) : !erro ? (
@@ -799,16 +829,16 @@ export default function ComparacoesClient() {
 
           {/* Totais selecionados */}
           <section className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-xl border border-[#DCE8DF] bg-white p-5 shadow-sm transition hover:shadow-md">
+            <div className="rounded-xl border border-[#DCE8DF] bg-white p-4 shadow-sm transition hover:shadow-md sm:p-5">
               <div className="flex items-center gap-3">
-                <div className="rounded-xl bg-[#EAF5EC] p-3">
+                <div className="shrink-0 rounded-xl bg-[#EAF5EC] p-3">
                   <Zap className="h-5 w-5 text-[#159447]" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-xs text-[#52666A]">
                     Energia total selecionada
                   </p>
-                  <p className="text-2xl font-bold text-[#18343C]">
+                  <p className="break-words text-xl font-bold text-[#18343C] sm:text-2xl">
                     {formatarNumero(energiaTotal)}
                     <span className="ml-2 text-xs font-medium text-[#52666A]">
                       kWh
@@ -818,16 +848,16 @@ export default function ComparacoesClient() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-[#DCE8DF] bg-white p-5 shadow-sm transition hover:shadow-md">
+            <div className="rounded-xl border border-[#DCE8DF] bg-white p-4 shadow-sm transition hover:shadow-md sm:p-5">
               <div className="flex items-center gap-3">
-                <div className="rounded-xl bg-[#EAF5EC] p-3">
+                <div className="shrink-0 rounded-xl bg-[#EAF5EC] p-3">
                   <Leaf className="h-5 w-5 text-[#159447]" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-xs text-[#52666A]">
                     Emissão total selecionada
                   </p>
-                  <p className="text-2xl font-bold text-[#18343C]">
+                  <p className="break-words text-xl font-bold text-[#18343C] sm:text-2xl">
                     {formatarNumero(emissaoTotal)}
                     <span className="ml-2 text-xs font-medium text-[#52666A]">
                       g CO₂e
@@ -839,8 +869,8 @@ export default function ComparacoesClient() {
           </section>
 
           {/* Gráfico de energia */}
-          <section className="rounded-2xl border border-[#DCE8DF] bg-white p-6 shadow-sm transition hover:shadow-md">
-            <div className="mb-7 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+          <section className="rounded-2xl border border-[#DCE8DF] bg-white p-4 shadow-sm transition hover:shadow-md sm:p-6">
+            <div className="mb-5 flex flex-col justify-between gap-3 sm:mb-7 sm:flex-row sm:items-center">
               <div>
                 <div className="mb-2 flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-[#159447]" />
@@ -848,32 +878,32 @@ export default function ComparacoesClient() {
                     Eficiência energética
                   </span>
                 </div>
-                <h2 className="text-lg font-bold text-[#18343C]">
+                <h2 className="text-base font-bold text-[#18343C] sm:text-lg">
                   Consumo por serviço
                 </h2>
-                <p className="mt-1 text-sm text-[#52666A]">
+                <p className="mt-1 text-xs text-[#52666A] sm:text-sm">
                   Comparação do consumo de energia em kWh
                 </p>
               </div>
 
-                <SeletorTipoGrafico
-                    tipo={tipoGraficoEnergia}
-                    onChange={setTipoGraficoEnergia}
-                />
+              <SeletorTipoGrafico
+                tipo={tipoGraficoEnergia}
+                onChange={setTipoGraficoEnergia}
+              />
             </div>
 
-            <div className="h-[360px] w-full">
-                <GraficoComparativo
-                    dados={dadosEnergia}
-                    unidade="kWh"
-                    tipo={tipoGraficoEnergia}
-                />
+            <div className="h-[300px] w-full sm:h-[360px]">
+              <GraficoComparativo
+                dados={dadosEnergia}
+                unidade="kWh"
+                tipo={tipoGraficoEnergia}
+              />
             </div>
           </section>
 
           {/* Gráfico de emissões */}
-          <section className="rounded-2xl border border-[#DCE8DF] bg-white p-6 shadow-sm transition hover:shadow-md">
-            <div className="mb-7 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+          <section className="rounded-2xl border border-[#DCE8DF] bg-white p-4 shadow-sm transition hover:shadow-md sm:p-6">
+            <div className="mb-5 flex flex-col justify-between gap-3 sm:mb-7 sm:flex-row sm:items-center">
               <div>
                 <div className="mb-2 flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-[#72C879]" />
@@ -881,26 +911,26 @@ export default function ComparacoesClient() {
                     Impacto ambiental
                   </span>
                 </div>
-                <h2 className="text-lg font-bold text-[#18343C]">
+                <h2 className="text-base font-bold text-[#18343C] sm:text-lg">
                   Emissões por serviço
                 </h2>
-                <p className="mt-1 text-sm text-[#52666A]">
+                <p className="mt-1 text-xs text-[#52666A] sm:text-sm">
                   Comparação das emissões de CO₂ equivalente em gramas
                 </p>
               </div>
 
-                <SeletorTipoGrafico
-                    tipo={tipoGraficoEmissoes}
-                    onChange={setTipoGraficoEmissoes}
-                />
+              <SeletorTipoGrafico
+                tipo={tipoGraficoEmissoes}
+                onChange={setTipoGraficoEmissoes}
+              />
             </div>
 
-            <div className="h-[360px] w-full">
-                <GraficoComparativo
-                    dados={dadosEmissoes}
-                    unidade="g CO₂e"
-                    tipo={tipoGraficoEmissoes}
-                />
+            <div className="h-[300px] w-full sm:h-[360px]">
+              <GraficoComparativo
+                dados={dadosEmissoes}
+                unidade="g CO₂e"
+                tipo={tipoGraficoEmissoes}
+              />
             </div>
           </section>
         </>

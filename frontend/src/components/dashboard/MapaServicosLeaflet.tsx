@@ -55,11 +55,11 @@ export default function MapaServicosLeaflet({
   const centroBrasil: LatLngExpression = [-14.235, -51.9253];
 
   return (
-    <MapContainer
+        <MapContainer
       center={centroBrasil}
       zoom={4}
       scrollWheelZoom
-      className="h-[320px] w-full rounded-lg"
+      className="h-[260px] sm:h-[320px] w-full rounded-lg"
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

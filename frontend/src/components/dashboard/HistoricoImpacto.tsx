@@ -30,7 +30,10 @@ export default function HistoricoImpacto() {
   }));
 
   return (
-    <section className="rounded-xl border border-[#DCE8DF] bg-white p-6 shadow-sm">
+    <section
+  id="historico"
+  className="min-w-0 rounded-xl border border-[#DCE8DF] bg-white p-4 sm:p-6 shadow-sm"
+>
       <h2 className="text-lg font-semibold text-[#18343C]">
         Histórico de impacto
       </h2>
@@ -56,7 +59,7 @@ export default function HistoricoImpacto() {
         </div>
       )}
 
-      <div className="mt-6 h-72 w-full">
+      <div className="mt-4 sm:mt-6 h-64 sm:h-72 w-full min-w-0">
         {carregando && (
           <div className="flex h-full items-center justify-center text-sm text-[#52666A]">
             Carregando histórico...

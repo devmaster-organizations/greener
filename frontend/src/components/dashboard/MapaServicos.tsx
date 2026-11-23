@@ -15,7 +15,7 @@ const Mapa = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex min-h-[320px] items-center justify-center bg-[#F7FAF7] text-sm text-[#52666A]">
+      <div className="flex min-h-[260px] sm:min-h-[320px] items-center justify-center bg-[#F7FAF7] text-sm text-[#52666A]">
         Carregando mapa...
       </div>
     ),
@@ -50,7 +50,7 @@ export default function MapaServicos() {
   const dados = combinarDados(servicos);
 
   return (
-    <section className="rounded-xl border border-[#DCE8DF] bg-white p-6 shadow-sm">
+    <section className="min-w-0 rounded-xl border border-[#DCE8DF] bg-white p-4 sm:p-6 shadow-sm">
       <div className="mb-5">
         <h2 className="text-lg font-semibold text-[#18343C]">
           Mapa de localização dos serviços
@@ -78,15 +78,15 @@ export default function MapaServicos() {
         </div>
       )}
 
-      <div className="min-h-[320px] overflow-hidden rounded-lg">
+      <div className="min-h-[260px] sm:min-h-[320px] overflow-hidden rounded-lg">
         {carregando && (
-          <div className="flex min-h-[320px] items-center justify-center bg-[#F7FAF7] text-sm text-[#52666A]">
+          <div className="flex min-h-[260px] sm:min-h-[320px] items-center justify-center bg-[#F7FAF7] text-sm text-[#52666A]">
             Carregando serviços...
           </div>
         )}
 
         {!carregando && dados.length === 0 && (
-          <div className="flex min-h-[320px] items-center justify-center bg-[#F7FAF7] text-sm text-[#52666A]">
+          <div className="flex min-h-[260px] sm:min-h-[320px] items-center justify-center bg-[#F7FAF7] text-sm text-[#52666A]">
             Nenhum serviço com localização disponível.
           </div>
         )}

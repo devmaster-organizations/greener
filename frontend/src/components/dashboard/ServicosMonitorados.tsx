@@ -82,9 +82,9 @@ export default function ServicosMonitorados() {
 
   return (
     <section
-      id="servicos"
-      className="mt-8 rounded-xl border border-[#DCE8DF] bg-white p-6 shadow-sm"
-    >
+  id="servicos"
+  className="mt-6 sm:mt-8 rounded-xl border border-[#DCE8DF] bg-white p-4 sm:p-6 shadow-sm"
+>
       <div className="mb-5">
         <h2 className="text-lg font-semibold text-[#18343C]">
           Serviços monitorados
@@ -112,8 +112,8 @@ export default function ServicosMonitorados() {
         </div>
       )}
 
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[850px] text-left text-sm">
+      <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+  <table className="w-full min-w-[760px] text-left text-sm">
           <thead>
             <tr className="border-b border-[#DCE8DF] text-[#52666A]">
               <th className="px-4 py-3 font-medium">Serviço</th>
@@ -154,7 +154,7 @@ export default function ServicosMonitorados() {
                       {servico.nome}
                     </td>
 
-                    <td className="px-4 py-4">
+                    <td className="whitespace-nowrap px-4 py-4">
                       <span
                         className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ${estilo.classe}`}
                       >
@@ -169,14 +169,14 @@ export default function ServicosMonitorados() {
                       {servico.localizacao}
                     </td>
 
-                    <td className="px-4 py-4 text-right text-[#18343C]">
+                    <td className="whitespace-nowrap px-4 py-4 text-right text-[#18343C]">
                       {servico.energiaKwh.toLocaleString("pt-BR", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 4,
                       })}
                     </td>
 
-                    <td className="px-4 py-4 text-right text-[#18343C]">
+                    <td className="whitespace-nowrap px-4 py-4 text-right text-[#18343C]">
                       {servico.co2e.toLocaleString("pt-BR", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 3,
