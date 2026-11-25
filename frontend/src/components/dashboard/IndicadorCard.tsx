@@ -18,7 +18,7 @@ export default function IndicadorCard({
 }: IndicadorCardProps) {
   return (
     <article
-      className={`group h-full overflow-hidden rounded-2xl border border-[#DCE8DF] border-t-4 ${corDestaque} bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg`}
+      className={`group h-full overflow-hidden rounded-2xl border border-[#DCE8DF] border-t-4 ${corDestaque} bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg sm:p-6`}
     >
       <div className="flex items-start justify-between gap-4">
         <h2 className="text-sm font-semibold leading-relaxed text-[#52666A]">
@@ -32,7 +32,7 @@ export default function IndicadorCard({
         )}
       </div>
 
-      <p className="mt-5 break-words text-3xl font-extrabold tracking-tight tabular-nums text-[#18343C]">
+      <p className="mt-3 break-words text-2xl font-extrabold tracking-tight tabular-nums text-[#18343C] sm:mt-5 sm:text-3xl">
         {valor}
       </p>
 

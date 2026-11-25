@@ -21,7 +21,7 @@ export default function ImpactoPorServico() {
   }));
 
   return (
-      <section className="group rounded-2xl border border-[#DCE8DF] bg-white p-6 shadow-sm transition-all duration-300 hover:border-green-200 hover:shadow-md">
+      <section className="group min-w-0 rounded-2xl border border-[#DCE8DF] bg-white p-4 shadow-sm transition-all duration-300 hover:border-green-200 hover:shadow-md sm:p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-lg font-bold tracking-tight text-[#18343C]">
@@ -54,7 +54,7 @@ export default function ImpactoPorServico() {
         </div>
       )}
 
-      <div className="mt-6 h-72 w-full">
+      <div className="mt-4 sm:mt-6 h-64 sm:h-72 w-full min-w-0">
         {carregando && (
           <div className="flex h-full items-center justify-center text-sm text-[#52666A]">
             Carregando impacto por serviço...
@@ -80,11 +80,14 @@ export default function ImpactoPorServico() {
               />
 
               <XAxis
-                dataKey="servico"
-                tick={{ fill: "#52666A", fontSize: 12 }}
-                axisLine={false}
-                tickLine={false}
-              />
+  dataKey="servico"
+  tick={{ fill: "#52666A", fontSize: 12 }}
+  tickFormatter={(valor: string) =>
+    valor.length > 12 ? `${valor.slice(0, 12)}…` : valor
+  }
+  axisLine={false}
+  tickLine={false}
+/>
 
               <YAxis
                 tick={{ fill: "#52666A", fontSize: 12 }}

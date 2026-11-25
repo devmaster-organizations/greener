@@ -31,7 +31,7 @@ export default function HistoricoImpacto() {
   }));
 
   return (
-      <section className="group rounded-2xl border border-[#DCE8DF] bg-white p-6 shadow-sm transition-all duration-300 hover:border-green-200 hover:shadow-md">
+      <section id="historico" className="group min-w-0 rounded-2xl border border-[#DCE8DF] bg-white p-4 shadow-sm transition-all duration-300 hover:border-green-200 hover:shadow-md sm:p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-lg font-bold tracking-tight text-[#18343C]">
@@ -65,7 +65,7 @@ export default function HistoricoImpacto() {
         </div>
       )}
 
-      <div className="mt-8 h-72 w-full">
+      <div className="mt-4 h-64 w-full min-w-0 sm:mt-8 sm:h-72">
         {carregando && (
           <div className="flex h-full items-center justify-center text-sm text-[#52666A]">
             Carregando histórico...

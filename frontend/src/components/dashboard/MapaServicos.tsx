@@ -17,7 +17,7 @@ const Mapa = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex min-h-[380px] items-center justify-center bg-[#F3F8F4] text-sm text-[#52666A]">
+      <div className="flex min-h-[260px] items-center justify-center bg-[#F3F8F4] text-sm text-[#52666A] sm:min-h-[380px]">
         Carregando mapa...
       </div>
     ),
@@ -64,7 +64,7 @@ export default function MapaServicos() {
   ).length;
 
   return (
-    <section className="group rounded-2xl border border-[#DCE8DF] bg-white p-6 shadow-sm transition-all duration-300 hover:border-green-200 hover:shadow-md">
+    <section className="group min-w-0 rounded-2xl border border-[#DCE8DF] bg-white p-4 shadow-sm transition-all duration-300 hover:border-green-200 hover:shadow-md sm:p-6">
       <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h2 className="text-lg font-bold tracking-tight text-[#18343C]">
@@ -98,14 +98,14 @@ export default function MapaServicos() {
 
       <div className="overflow-hidden rounded-2xl border border-[#E5EDE7] bg-[#F3F8F4] p-1.5">
         {carregando && (
-          <div className="flex min-h-[380px] flex-col items-center justify-center gap-3 text-sm text-[#52666A]">
+          <div className="flex min-h-[260px] flex-col items-center justify-center gap-3 text-sm text-[#52666A] sm:min-h-[380px]">
             <MapPin size={28} className="text-green-600" />
             Carregando serviços...
           </div>
         )}
 
         {!carregando && dados.length === 0 && (
-          <div className="flex min-h-[380px] flex-col items-center justify-center gap-3 px-4 text-center">
+          <div className="flex min-h-[260px] flex-col items-center justify-center gap-3 px-4 text-center sm:min-h-[380px]">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm">
               <MapPin size={26} className="text-[#8A9A96]" />
             </div>

@@ -5,10 +5,10 @@ import ServicosDashboard from "../../components/servicos/ServicosDashboard";
 
 export default function ServicosPage() {
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen flex-col bg-gray-50 md:flex-row">
       <Sidebar />
 
-      <main className="min-w-0 flex-1 p-8">
+      <main className="min-w-0 flex-1 p-4 sm:p-6 lg:p-8">
         <Header
           titulo="Serviços"
           descricao="Métricas detalhadas e histórico de cada serviço monitorado."

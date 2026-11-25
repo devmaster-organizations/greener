@@ -85,7 +85,7 @@ export default function ServicosMonitorados() {
   return (
     <section
       id="servicos"
-      className="group mt-8 rounded-2xl border border-[#DCE8DF] bg-white p-6 shadow-sm transition-all duration-300 hover:border-green-200 hover:shadow-md"
+      className="group mt-6 min-w-0 rounded-2xl border border-[#DCE8DF] bg-white p-4 shadow-sm transition-all duration-300 hover:border-green-200 hover:shadow-md sm:mt-8 sm:p-6"
     >
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>

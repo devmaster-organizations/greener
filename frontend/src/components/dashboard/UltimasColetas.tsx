@@ -77,7 +77,7 @@ export default function UltimasColetas() {
   const dados = combinarDados(coletas);
 
   return (
-    <section className="rounded-2xl border border-[#DCE8DF] bg-white p-6 shadow-sm transition-all duration-300 hover:border-green-200 hover:shadow-md">
+    <section className="min-w-0 rounded-2xl border border-[#DCE8DF] bg-white p-4 shadow-sm transition-all duration-300 hover:border-green-200 hover:shadow-md sm:p-6">
       <div className="mb-5">
         <h2 className="text-lg font-semibold text-[#18343C]">
           Coletas recentes
@@ -105,8 +105,8 @@ export default function UltimasColetas() {
         </div>
       )}
 
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[700px] text-left text-sm">
+      <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+  <table className="w-full min-w-[700px] text-left text-sm">
           <thead>
             <tr className="border-b border-[#DCE8DF] text-[#52666A]">
               <th className="px-4 py-3 font-medium">Serviço</th>
@@ -159,7 +159,7 @@ export default function UltimasColetas() {
                       {formatarNumero(coleta.co2e, 3)}
                     </td>
 
-                    <td className="px-4 py-4">
+                    <td className="whitespace-nowrap px-4 py-4">
                       <span
                         className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${estilo.classe}`}
                       >
