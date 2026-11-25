@@ -1,5 +1,7 @@
+
 "use client";
 
+import { AlertCircle } from "lucide-react";
 import { useDashboardData } from "./DashboardDataProvider";
 import IndicadorCard from "./IndicadorCard";
 
@@ -21,6 +23,8 @@ export default function IndicadorServicosIndisponiveis() {
           ? "Carregando..."
           : "Serviços sem resposta")
       }
+      corDestaque="border-t-red-500"
+      icone={<AlertCircle size={23} className="text-red-500" />}
     />
   );
 }

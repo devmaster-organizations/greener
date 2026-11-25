@@ -10,6 +10,7 @@ import {
   YAxis,
 } from "recharts";
 import { useDashboardData } from "./DashboardDataProvider";
+import { Leaf } from "lucide-react";
 
 export default function ImpactoPorServico() {
   const { impactos, carregando, erro, recarregar } = useDashboardData();
@@ -20,15 +21,22 @@ export default function ImpactoPorServico() {
   }));
 
   return (
-    <section className="min-w-0 rounded-xl border border-[#DCE8DF] bg-white p-4 sm:p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-[#18343C]">
-        Impacto por serviço
-      </h2>
+      <section className="group min-w-0 rounded-2xl border border-[#DCE8DF] bg-white p-4 shadow-sm transition-all duration-300 hover:border-green-200 hover:shadow-md sm:p-6">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-lg font-bold tracking-tight text-[#18343C]">
+            Impacto por serviço
+          </h2>
 
-      <p className="mt-1 text-sm text-[#52666A]">
-        Emissões estimadas de CO₂e por serviço
-      </p>
+          <p className="mt-1 text-sm text-[#718187]">
+            Emissões estimadas de CO₂e por serviço
+          </p>
+        </div>
 
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-50">
+          <Leaf size={21} className="text-green-600" />
+        </div>
+      </div>
       {erro && (
         <div
           role="alert"
@@ -88,6 +96,7 @@ export default function ImpactoPorServico() {
                 width={48}
               />
 
+
               <Tooltip
                 formatter={(value) => [
                   `${Number(value).toLocaleString("pt-BR", {
@@ -97,16 +106,31 @@ export default function ImpactoPorServico() {
                   "CO₂e",
                 ]}
                 contentStyle={{
-                  borderRadius: 12,
+                  backgroundColor: "#FFFFFF",
+                  borderRadius: 14,
                   border: "1px solid #DCE8DF",
+                  boxShadow: "0 8px 24px rgba(24, 52, 60, 0.10)",
+                  padding: "12px 16px",
                 }}
+                labelStyle={{
+                  color: "#18343C",
+                  fontWeight: 700,
+                  marginBottom: 6,
+                }}
+                itemStyle={{
+                  color: "#159447",
+                  fontSize: 13,
+                  fontWeight: 600,
+                }}
+                cursor={{ fill: "#F0F7F1" }}
               />
 
               <Bar
                 dataKey="co2e"
                 fill="#159447"
-                radius={[6, 6, 0, 0]}
-                maxBarSize={52}
+                radius={[8, 8, 0, 0]}
+                maxBarSize={48}
+                activeBar={{ fill: "#117A3B" }}
               />
             </BarChart>
           </ResponsiveContainer>

@@ -1,5 +1,7 @@
+
 "use client";
 
+import { Server } from "lucide-react";
 import { useDashboardData } from "./DashboardDataProvider";
 import IndicadorCard from "./IndicadorCard";
 
@@ -21,6 +23,8 @@ export default function IndicadorServicosMonitorados() {
           ? "Carregando..."
           : "Serviços identificados")
       }
+      corDestaque="border-t-blue-500"
+      icone={<Server size={23} className="text-blue-600" />}
     />
   );
 }

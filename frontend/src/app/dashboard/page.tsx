@@ -17,7 +17,7 @@ import Link from "next/link";
 export default function Home() {
     return (
         <DashboardDataProvider>
-            <div className="flex min-h-screen overflow-x-hidden bg-gray-50">
+            <div className="flex min-h-screen flex-col overflow-x-hidden bg-gray-50 md:flex-row">
                 <Sidebar />
 
                 <main className="min-w-0 flex-1 p-4 sm:p-6 lg:p-8">
@@ -46,7 +46,7 @@ export default function Home() {
                     </section>
 
                     <section
-                        className="mt-6 sm:mt-8 grid grid-cols-1 gap-4 sm:gap-6 xl:grid-cols-2"
+                        className="mt-6 grid grid-cols-1 items-start gap-4 sm:mt-8 sm:gap-6 2xl:grid-cols-2"
                         aria-label="Gráficos de impacto ambiental"
                     >
                         <ImpactoPorServico />
@@ -56,7 +56,7 @@ export default function Home() {
                     <ServicosMonitorados />
 
                     <section
-                        className="mt-6 sm:mt-8 grid grid-cols-1 gap-4 sm:gap-6 2xl:grid-cols-2"
+                        className="mt-6 grid grid-cols-1 items-start gap-4 sm:mt-8 sm:gap-6 2xl:grid-cols-2"
                         aria-label="Detalhes do monitoramento"
                     >
                         <MapaServicos />
