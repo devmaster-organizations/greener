@@ -77,7 +77,7 @@ export default function UltimasColetas() {
   const dados = combinarDados(coletas);
 
   return (
-    <section className="mt-8 rounded-xl border border-[#DCE8DF] bg-white p-6 shadow-sm">
+    <section className="rounded-2xl border border-[#DCE8DF] bg-white p-6 shadow-sm transition-all duration-300 hover:border-green-200 hover:shadow-md">
       <div className="mb-5">
         <h2 className="text-lg font-semibold text-[#18343C]">
           Coletas recentes

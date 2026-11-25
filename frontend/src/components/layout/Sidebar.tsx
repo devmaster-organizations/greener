@@ -1,100 +1,176 @@
 
-export default function Sidebar() {
-  return (
-    <aside className="flex min-h-screen w-64 flex-col bg-[#064E2D] p-6 text-white">
-      <div className="mb-10 flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
-          <svg
-            viewBox="0 0 48 48"
-            className="h-8 w-8"
-            fill="none"
-            stroke="#72C879"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M24 42V20" />
-            <path d="M24 29C10 29 5 19 7 7c12 0 21 7 17 22Z" />
-            <path d="M24 36c0-13 8-22 19-23 1 12-6 22-19 23Z" />
-            <path d="m13 14 11 12" />
-            <path d="m35 20-11 12" />
-          </svg>
-        </div>
+'use client';
 
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            Green<span className="text-[#72C879]">ER</span>
-          </h1>
-          <p className="mt-1 text-xs tracking-widest text-white/60">
-            TECNOLOGIA SUSTENTÁVEL
-          </p>
-        </div>
+import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  LayoutDashboard,
+  Server,
+  ChartNoAxesCombined,
+  Settings,
+  LogIn,
+  Leaf,
+  PanelLeftClose,
+  PanelLeftOpen,
+} from 'lucide-react';
+
+const menuItems = [
+  {
+    label: 'Dashboard',
+    href: '/dashboard',
+    icon: LayoutDashboard,
+  },
+  {
+    label: 'Serviços',
+    href: '/servicos',
+    icon: Server,
+  },
+  {
+    label: 'Comparações',
+    href: '/comparacoes',
+    icon: ChartNoAxesCombined,
+  },
+  {
+    label: 'Configurações',
+    href: '/configuracoes',
+    icon: Settings,
+  },
+  {
+    label: 'Login',
+    href: '/login',
+    icon: LogIn,
+  },
+];
+
+export default function Sidebar() {
+  const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
+
+  return (
+    <aside
+      className={`sticky top-0 flex h-screen shrink-0 flex-col
+        bg-[#064E2D] text-white shadow-xl
+        transition-all duration-300 ease-in-out
+        ${collapsed ? 'w-20' : 'w-64'}
+        max-md:w-20`}
+    >
+      {/* Identidade visual */}
+      <div className="flex h-24 items-center justify-between px-4">
+        <Link
+          href="/dashboard"
+          className="flex min-w-0 items-center gap-3"
+          title="GreenER - Dashboard"
+        >
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10">
+            <Leaf size={27} className="text-[#72C879]" />
+          </div>
+
+          {!collapsed && (
+            <div className="hidden min-w-0 md:block">
+              <h1 className="text-2xl font-bold tracking-tight">
+                Green<span className="text-[#72C879]">ER</span>
+              </h1>
+              <p className="text-[9px] tracking-[0.18em] text-white/60">
+                TECNOLOGIA SUSTENTÁVEL
+              </p>
+            </div>
+          )}
+        </Link>
       </div>
 
-      <nav aria-label="Menu principal">
+      {/* Botão de recolher */}
+      <div className="hidden px-4 pb-5 md:flex">
+        <button
+          type="button"
+          onClick={() => setCollapsed(!collapsed)}
+          aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'}
+          title={collapsed ? 'Expandir menu' : 'Recolher menu'}
+          className="flex w-full items-center justify-center rounded-lg
+            bg-white/10 p-2 text-white/80 transition
+            hover:bg-white/20 hover:text-white"
+        >
+          {collapsed ? (
+            <PanelLeftOpen size={19} />
+          ) : (
+            <PanelLeftClose size={19} />
+          )}
+          {!collapsed && (
+            <span className="ml-3 text-xs">Recolher menu</span>
+          )}
+        </button>
+      </div>
+
+      {/* Navegação */}
+      <nav aria-label="Menu principal" className="flex-1 px-3">
+        <p
+          className={`mb-4 px-3 text-[10px] font-semibold uppercase
+            tracking-[0.2em] text-white/40
+            ${collapsed ? 'hidden' : 'hidden md:block'}`}
+        >
+          Menu principal
+        </p>
+
         <ul className="space-y-2">
-          <li>
-            <a
-              href="/dashboard"
-              aria-current="page"
-              className="block rounded-lg bg-[#159447] px-4 py-3 font-semibold text-white"
-            >
-              Dashboard
-            </a>
-          </li>
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const active = pathname === item.href;
 
-          <li>
-            <a
-              href="#servicos"
-              className="block rounded-lg px-4 py-3 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Serviços
-            </a>
-          </li>
+            return (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  title={item.label}
+                  aria-current={active ? 'page' : undefined}
+                  className={`group relative flex items-center gap-3
+                    rounded-xl px-3 py-3 transition-all duration-200
+                    ${
+                      active
+                        ? 'bg-[#159447] font-semibold text-white shadow-lg shadow-black/10'
+                        : 'text-white/70 hover:bg-white/10 hover:text-white'
+                    }`}
+                >
+                  {active && (
+                    <span className="absolute -left-3 h-7 w-1 rounded-r-full bg-[#72C879]" />
+                  )}
 
-          <li>
-            <a
-              href="#historico"
-              className="block rounded-lg px-4 py-3 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Histórico
-            </a>
-          </li>
+                  <Icon
+                    size={21}
+                    strokeWidth={active ? 2.5 : 2}
+                    className="shrink-0"
+                  />
 
-          <li>
-            <a
-              href="/comparacoes"
-              className="block rounded-lg px-4 py-3 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Comparações
-            </a>
-          </li>
-
-          <li>
-            <a
-              href="/configuracoes"
-              className="block rounded-lg px-4 py-3 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Configurações
-            </a>
-          </li>
-          
-          <li>
-            <a
-              href="/login"
-              className="block rounded-lg px-4 py-3 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Login
-            </a>
-          </li>
-
+                  <span
+                    className={`hidden truncate text-sm md:inline
+                      ${collapsed ? 'md:hidden' : ''}`}
+                  >
+                    {item.label}
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </nav>
 
-      <div className="mt-auto border-t border-white/15 pt-5">
-        <p className="text-xs leading-relaxed text-white/60">
-          Tecnologia que respeita o amanhã.
+      {/* Rodapé */}
+      <div className="border-t border-white/10 p-4">
+        <div className="flex items-center justify-center gap-2">
+          <Leaf size={16} className="shrink-0 text-[#72C879]" />
+
+          <p
+            className={`hidden text-[10px] leading-relaxed text-white/50
+              md:block ${collapsed ? 'md:hidden' : ''}`}
+          >
+            Tecnologia que respeita o amanhã.
+          </p>
+        </div>
+
+        <p
+          className={`mt-3 hidden text-center text-[9px] text-white/30
+            md:block ${collapsed ? 'md:hidden' : ''}`}
+        >
+          GreenER © 2026
         </p>
       </div>
     </aside>

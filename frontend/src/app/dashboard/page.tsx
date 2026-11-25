@@ -48,7 +48,7 @@ export default function Home() {
 
 
                 <section
-                    className="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-2"
+                    className="mt-8 grid grid-cols-1 items-start gap-6 2xl:grid-cols-2"
                     aria-label="Gráficos de impacto ambiental"
                 >
                     <ImpactoPorServico />
@@ -58,7 +58,7 @@ export default function Home() {
                 <ServicosMonitorados />
 
                 <section
-                    className="mt-8 grid grid-cols-1 gap-6 2xl:grid-cols-2"
+                    className="mt-8 grid grid-cols-1 items-start gap-6 2xl:grid-cols-2"
                     aria-label="Detalhes do monitoramento"
                 >
 

@@ -10,6 +10,7 @@ import {
   YAxis,
 } from "recharts";
 import { useDashboardData } from "./DashboardDataProvider";
+import { TrendingUp } from "lucide-react";
 
 function formatarDia(dia: string): string {
   const partes = dia.slice(0, 10).split("-");
@@ -30,14 +31,22 @@ export default function HistoricoImpacto() {
   }));
 
   return (
-    <section className="rounded-xl border border-[#DCE8DF] bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-[#18343C]">
-        Histórico de impacto
-      </h2>
+      <section className="group rounded-2xl border border-[#DCE8DF] bg-white p-6 shadow-sm transition-all duration-300 hover:border-green-200 hover:shadow-md">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-bold tracking-tight text-[#18343C]">
+              Histórico de impacto
+            </h2>
 
-      <p className="mt-1 text-sm text-[#52666A]">
-        Evolução das emissões estimadas de CO₂e
-      </p>
+            <p className="mt-1 text-sm text-[#718187]">
+              Evolução das emissões estimadas de CO₂e
+            </p>
+          </div>
+
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-50">
+            <TrendingUp size={21} className="text-green-600" />
+          </div>
+        </div>
 
       {erro && (
         <div
@@ -56,7 +65,7 @@ export default function HistoricoImpacto() {
         </div>
       )}
 
-      <div className="mt-6 h-72 w-full">
+      <div className="mt-8 h-72 w-full">
         {carregando && (
           <div className="flex h-full items-center justify-center text-sm text-[#52666A]">
             Carregando histórico...
@@ -104,9 +113,23 @@ export default function HistoricoImpacto() {
                   "CO₂e",
                 ]}
                 contentStyle={{
-                  borderRadius: 12,
+                  backgroundColor: "#FFFFFF",
+                  borderRadius: 14,
                   border: "1px solid #DCE8DF",
+                  boxShadow: "0 8px 24px rgba(24, 52, 60, 0.10)",
+                  padding: "12px 16px",
                 }}
+                labelStyle={{
+                  color: "#18343C",
+                  fontWeight: 700,
+                  marginBottom: 6,
+                }}
+                itemStyle={{
+                  color: "#159447",
+                  fontSize: 13,
+                  fontWeight: 600,
+                }}
+                cursor={{ stroke: "#A7D8B5", strokeDasharray: "4 4" }}
               />
 
               <Line
@@ -114,8 +137,19 @@ export default function HistoricoImpacto() {
                 dataKey="co2e"
                 stroke="#159447"
                 strokeWidth={3}
-                dot={{ r: 4, fill: "#159447" }}
-                activeDot={{ r: 6 }}
+                dot={{
+                  r: 4,
+                  fill: "#FFFFFF",
+                  stroke: "#159447",
+                  strokeWidth: 2,
+                }}
+                activeDot={{
+                  r: 7,
+                  fill: "#159447",
+                  stroke: "#FFFFFF",
+                  strokeWidth: 3,
+                }}
+                animationDuration={800}
               />
             </LineChart>
           </ResponsiveContainer>
